@@ -8,9 +8,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.cbmachinery.aftercareserviceagent.model.UserCredential;
-import com.cbmachinery.aftercareserviceagent.model.enums.Role;
-import com.cbmachinery.aftercareserviceagent.repository.UserCredentialRepository;
+import com.cbmachinery.aftercareserviceagent.auth.model.UserCredential;
+import com.cbmachinery.aftercareserviceagent.auth.model.enums.Role;
+import com.cbmachinery.aftercareserviceagent.auth.repository.UserCredentialRepository;
 
 import lombok.extern.slf4j.Slf4j;
 
