@@ -1,5 +1,7 @@
 package com.cbmachinery.aftercareserviceagent.auth.service.impl;
 
+import javax.transaction.Transactional;
+
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -57,6 +59,12 @@ public class UserCredentialServiceImpl implements UserCredentialService {
 				.username(userCredential.getUsername()).password(passwordEncoder.encode(newPassword))
 				.role(userCredential.getRole()).active(userCredential.isActive())
 				.createdAt(userCredential.getCreatedAt()).createdBy(userCredential.getCreatedBy()).build());
+	}
+
+	@Transactional
+	@Override
+	public void changeActiveStatus(String username, boolean active) {
+		this.userCredentialRepository.changeActiveStatus(username, active);
 	}
 
 }

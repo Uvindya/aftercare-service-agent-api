@@ -1,5 +1,6 @@
 package com.cbmachinery.aftercareserviceagent.auth.service;
 
+import com.cbmachinery.aftercareserviceagent.auth.dto.ChangeActiveStatusInputDTO;
 import com.cbmachinery.aftercareserviceagent.auth.dto.ChangeCredentialInputDTO;
 import com.cbmachinery.aftercareserviceagent.auth.dto.LoginInputDTO;
 import com.cbmachinery.aftercareserviceagent.auth.dto.LoginOutputDTO;
@@ -15,5 +16,7 @@ public interface AuthService {
 	StatusDTO checkUsernameStatus(String username);
 
 	UserCredentialOutputDTO getBasicUserProfile(String username);
+
+	void changeActiveStatus(ChangeActiveStatusInputDTO changeActiveStatusInput);
 
 }

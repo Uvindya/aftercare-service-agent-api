@@ -7,6 +7,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import com.cbmachinery.aftercareserviceagent.auth.dto.ChangeActiveStatusInputDTO;
 import com.cbmachinery.aftercareserviceagent.auth.dto.ChangeCredentialInputDTO;
 import com.cbmachinery.aftercareserviceagent.auth.dto.LoginInputDTO;
 import com.cbmachinery.aftercareserviceagent.auth.dto.LoginOutputDTO;
@@ -61,6 +62,12 @@ public class AuthServiceImpl implements AuthService {
 	@Override
 	public UserCredentialOutputDTO getBasicUserProfile(String username) {
 		return this.userCredentialService.findByUsername(username).viewAsOutput();
+	}
+
+	@Override
+	public void changeActiveStatus(ChangeActiveStatusInputDTO changeActiveStatusInput) {
+		this.userCredentialService.changeActiveStatus(changeActiveStatusInput.getUsername(),
+				changeActiveStatusInput.isStatus());
 	}
 
 }

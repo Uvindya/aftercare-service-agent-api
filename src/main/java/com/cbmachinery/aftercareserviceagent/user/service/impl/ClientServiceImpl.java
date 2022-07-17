@@ -10,8 +10,10 @@ import com.cbmachinery.aftercareserviceagent.auth.dto.UserCredentialInputDTO;
 import com.cbmachinery.aftercareserviceagent.auth.model.UserCredential;
 import com.cbmachinery.aftercareserviceagent.auth.model.enums.Role;
 import com.cbmachinery.aftercareserviceagent.auth.service.UserCredentialService;
+import com.cbmachinery.aftercareserviceagent.common.exception.ResourceNotFoundException;
 import com.cbmachinery.aftercareserviceagent.user.dto.BasicUserOutputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.ClientInputDTO;
+import com.cbmachinery.aftercareserviceagent.user.dto.ClientOutputDTO;
 import com.cbmachinery.aftercareserviceagent.user.model.Client;
 import com.cbmachinery.aftercareserviceagent.user.repository.ClientRepository;
 import com.cbmachinery.aftercareserviceagent.user.service.ClientService;
@@ -52,6 +54,12 @@ public class ClientServiceImpl implements ClientService {
 				.findAllByEmailContainingIgnoreCaseOrFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
 						searchTerm, searchTerm, searchTerm, pageable)
 				.map(Client::viewAsBasicDTO);
+	}
+
+	@Override
+	public ClientOutputDTO findById(long id) {
+		return clientRepository.findById(id).map(Client::viewAsDTO)
+				.orElseThrow(() -> new ResourceNotFoundException("No Client found for this ID"));
 	}
 
 }

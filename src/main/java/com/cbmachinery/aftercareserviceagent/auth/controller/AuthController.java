@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cbmachinery.aftercareserviceagent.auth.dto.ChangeActiveStatusInputDTO;
 import com.cbmachinery.aftercareserviceagent.auth.dto.ChangeCredentialInputDTO;
 import com.cbmachinery.aftercareserviceagent.auth.dto.LoginInputDTO;
 import com.cbmachinery.aftercareserviceagent.auth.dto.LoginOutputDTO;
@@ -51,5 +52,11 @@ public class AuthController {
 	@PostMapping("/me")
 	public ResponseEntity<UserCredentialOutputDTO> getProfile(Principal principal) {
 		return ResponseEntity.ok(this.authService.getBasicUserProfile(principal.getName()));
+	}
+
+	@PutMapping("/change/status")
+	public ResponseEntity<Void> changeActiveStatus(@Valid @RequestBody ChangeActiveStatusInputDTO changeStatusInput) {
+		this.authService.changeActiveStatus(changeStatusInput);
+		return ResponseEntity.ok().build();
 	}
 }
