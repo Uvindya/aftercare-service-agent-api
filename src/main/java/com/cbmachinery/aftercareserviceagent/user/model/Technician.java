@@ -13,9 +13,12 @@ import javax.persistence.Table;
 
 import org.hibernate.envers.Audited;
 
+import com.cbmachinery.aftercareserviceagent.common.util.DateTimeUtil;
 import com.cbmachinery.aftercareserviceagent.skill.model.Skill;
 import com.cbmachinery.aftercareserviceagent.task.model.Breakdown;
 import com.cbmachinery.aftercareserviceagent.task.model.Maintainance;
+import com.cbmachinery.aftercareserviceagent.user.dto.TechnicianOutputDTO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -40,5 +43,12 @@ public class Technician extends User {
 	@ManyToMany
 	@JoinTable(name = "technician_skills", joinColumns = @JoinColumn(name = "technician_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
 	private Set<Skill> skills;
+
+	@JsonIgnore
+	public TechnicianOutputDTO viewAsDTO() {
+		return new TechnicianOutputDTO(getId(), DateTimeUtil.fomatToLongDateTime(createdAt), createdBy,
+				DateTimeUtil.fomatToLongDateTime(modifiedAt), modifiedBy, getFirstName(), getLastName(), getEmail(),
+				getPrimaryPhoneNo(), getGender(), yearOfExperience);
+	}
 
 }
