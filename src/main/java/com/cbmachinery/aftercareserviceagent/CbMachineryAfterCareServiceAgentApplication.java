@@ -6,6 +6,7 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.cbmachinery.aftercareserviceagent.auth.model.UserCredential;
@@ -16,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @SpringBootApplication
 @Slf4j
+@EnableAsync
 public class CbMachineryAfterCareServiceAgentApplication {
 
 	private static final String DEFAULT_ADMIN_USERNAME = "ams.amila@gmail.com";

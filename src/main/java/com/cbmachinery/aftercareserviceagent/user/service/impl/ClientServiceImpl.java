@@ -57,8 +57,13 @@ public class ClientServiceImpl implements ClientService {
 	}
 
 	@Override
-	public ClientOutputDTO findById(long id) {
-		return clientRepository.findById(id).map(Client::viewAsDTO)
+	public ClientOutputDTO findByIdAsDTO(long id) {
+		return findById(id).viewAsDTO();
+	}
+
+	@Override
+	public Client findById(long id) {
+		return clientRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("No Client found for this ID"));
 	}
 

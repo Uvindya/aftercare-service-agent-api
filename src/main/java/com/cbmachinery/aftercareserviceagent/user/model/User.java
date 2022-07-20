@@ -63,4 +63,9 @@ public abstract class User extends Auditable<String> {
 		return new BasicUserOutputDTO(id, firstName + " " + lastName, email, primaryPhoneNo, userCredential.isActive());
 	}
 
+	@JsonIgnore
+	public String getFullName() {
+		return firstName + " " + lastName;
+	}
+
 }

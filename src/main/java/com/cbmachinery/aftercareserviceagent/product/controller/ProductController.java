@@ -1,10 +1,49 @@
 package com.cbmachinery.aftercareserviceagent.product.controller;
 
+import javax.validation.Valid;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.cbmachinery.aftercareserviceagent.product.dto.BasicProductOutputDTO;
+import com.cbmachinery.aftercareserviceagent.product.dto.ProductInputDTO;
+import com.cbmachinery.aftercareserviceagent.product.dto.ProductOutputDTO;
+import com.cbmachinery.aftercareserviceagent.product.service.ProductService;
 
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {
+
+	private final ProductService productService;
+
+	public ProductController(final ProductService productService) {
+		super();
+		this.productService = productService;
+	}
+
+	@PostMapping
+	public ResponseEntity<BasicProductOutputDTO> save(@Valid @RequestBody ProductInputDTO productInput) {
+		return new ResponseEntity<>(productService.save(productInput), HttpStatus.CREATED);
+	}
+
+	@GetMapping
+	public ResponseEntity<Page<BasicProductOutputDTO>> findAll(Pageable pageable,
+			@RequestParam(required = false) String searchTerm) {
+		return ResponseEntity.ok(productService.findAll(pageable, searchTerm));
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<ProductOutputDTO> findById(@PathVariable long id) {
+		return ResponseEntity.ok(productService.findByIdAsDTO(id));
+	}
 
 }

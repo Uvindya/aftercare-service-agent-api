@@ -1,6 +1,7 @@
 package com.cbmachinery.aftercareserviceagent.task.model;
 
 import java.time.LocalDate;
+import java.util.Objects;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -22,7 +23,9 @@ import org.hibernate.envers.Audited;
 import com.cbmachinery.aftercareserviceagent.common.audit.Auditable;
 import com.cbmachinery.aftercareserviceagent.notification.model.Notification;
 import com.cbmachinery.aftercareserviceagent.product.model.Product;
+import com.cbmachinery.aftercareserviceagent.task.dto.BasicTaskOutputDTO;
 import com.cbmachinery.aftercareserviceagent.user.model.Technician;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -52,8 +55,8 @@ public abstract class Task extends Auditable<String> {
 	@JoinColumn(name = "product_id", nullable = false)
 	private Product product;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "technician_id", nullable = false)
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "technician_id")
 	private Technician technician;
 
 	@OneToMany(mappedBy = "task", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
@@ -64,5 +67,17 @@ public abstract class Task extends Auditable<String> {
 
 	@Column(columnDefinition = "TEXT")
 	private String additionalNote;
+
+	@JsonIgnore
+	public BasicTaskOutputDTO viewAsBasicDTO() {
+		long techId = 0;
+		String techName = null;
+		if (Objects.nonNull(technician)) {
+			techId = technician.getId();
+			techName = technician.getFullName();
+		}
+		return new BasicTaskOutputDTO(id, description, reportedAt, scheduledDate, product.getId(), product.getName(),
+				techId, techName);
+	}
 
 }

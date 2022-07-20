@@ -43,7 +43,7 @@ public class ClientController {
 
 	@GetMapping("/{id}")
 	public ResponseEntity<ClientOutputDTO> findById(@PathVariable long id) {
-		return ResponseEntity.ok(clientService.findById(id));
+		return ResponseEntity.ok(clientService.findByIdAsDTO(id));
 	}
 
 }

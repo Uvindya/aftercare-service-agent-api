@@ -17,9 +17,13 @@ import javax.persistence.Table;
 import org.hibernate.envers.Audited;
 
 import com.cbmachinery.aftercareserviceagent.common.audit.Auditable;
+import com.cbmachinery.aftercareserviceagent.common.util.DateTimeUtil;
+import com.cbmachinery.aftercareserviceagent.product.dto.BasicProductOutputDTO;
+import com.cbmachinery.aftercareserviceagent.product.dto.ProductOutputDTO;
 import com.cbmachinery.aftercareserviceagent.task.model.Breakdown;
 import com.cbmachinery.aftercareserviceagent.task.model.Maintainance;
 import com.cbmachinery.aftercareserviceagent.user.model.Client;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -52,5 +56,18 @@ public class Product extends Auditable<String> {
 
 	@OneToMany(mappedBy = "product", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<Maintainance> maintainances;
+
+	@JsonIgnore
+	public BasicProductOutputDTO viewAsBasicDTO() {
+		return new BasicProductOutputDTO(id, DateTimeUtil.fomatToLongDateTime(createdAt), name, warrentyPeriod, erpId,
+				client.getId(), client.getFullName());
+	}
+
+	@JsonIgnore
+	public ProductOutputDTO viewAsDTO() {
+		return new ProductOutputDTO(id, DateTimeUtil.fomatToLongDateTime(createdAt), createdBy,
+				DateTimeUtil.fomatToLongDateTime(modifiedAt), modifiedBy, name, warrentyPeriod, maintainnanceInterval,
+				erpId, client.viewAsBasicDTO());
+	}
 
 }

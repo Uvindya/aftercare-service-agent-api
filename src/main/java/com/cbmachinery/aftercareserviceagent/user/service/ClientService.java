@@ -6,11 +6,15 @@ import org.springframework.data.domain.Pageable;
 import com.cbmachinery.aftercareserviceagent.user.dto.BasicUserOutputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.ClientInputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.ClientOutputDTO;
+import com.cbmachinery.aftercareserviceagent.user.model.Client;
 
 public interface ClientService {
 	BasicUserOutputDTO save(ClientInputDTO clientInput);
 
 	Page<BasicUserOutputDTO> findAll(Pageable pageable, String searchTerm);
 
-	ClientOutputDTO findById(long id);
+	ClientOutputDTO findByIdAsDTO(long id);
+
+	Client findById(long id);
+
 }
