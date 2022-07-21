@@ -1,5 +1,7 @@
 package com.cbmachinery.aftercareserviceagent.user.service;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -16,5 +18,7 @@ public interface ClientService {
 	ClientOutputDTO findByIdAsDTO(long id);
 
 	Client findById(long id);
+
+	List<BasicUserOutputDTO> findAll();
 
 }

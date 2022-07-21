@@ -1,6 +1,9 @@
 package com.cbmachinery.aftercareserviceagent.user.service.impl;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -65,6 +68,13 @@ public class ClientServiceImpl implements ClientService {
 	public Client findById(long id) {
 		return clientRepository.findById(id)
 				.orElseThrow(() -> new ResourceNotFoundException("No Client found for this ID"));
+	}
+
+	@Override
+	public List<BasicUserOutputDTO> findAll() {
+		return StreamSupport.stream(clientRepository.findAll().spliterator(), false).map(Client::viewAsBasicDTO)
+				.collect(Collectors.toList());
+
 	}
 
 }
