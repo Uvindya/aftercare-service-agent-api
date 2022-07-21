@@ -1,5 +1,7 @@
 package com.cbmachinery.aftercareserviceagent.product.service.impl;
 
+import java.util.Objects;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -60,7 +62,10 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public Page<BasicProductOutputDTO> findAll(Pageable pageable, String searchTerm) {
+		if (Objects.isNull(searchTerm)) {
 		return productRepository.findAll(pageable).map(Product::viewAsBasicDTO);
+		}
+		return productRepository.findByParams(searchTerm, searchTerm, searchTerm,pageable).map(Product::viewAsBasicDTO);
 	}
 
 	@Override
