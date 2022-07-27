@@ -7,8 +7,10 @@ import javax.persistence.Table;
 
 import org.hibernate.envers.Audited;
 
+import com.cbmachinery.aftercareserviceagent.common.util.DateTimeUtil;
 import com.cbmachinery.aftercareserviceagent.task.dto.BasicMaintainanceOutputDTO;
 import com.cbmachinery.aftercareserviceagent.task.dto.BasicTaskOutputDTO;
+import com.cbmachinery.aftercareserviceagent.task.dto.MaintainanceOutputDTO;
 import com.cbmachinery.aftercareserviceagent.task.model.enums.MaintainanceStatus;
 import com.cbmachinery.aftercareserviceagent.task.model.enums.MaintainanceType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -36,7 +38,16 @@ public class Maintainance extends Task {
 		BasicTaskOutputDTO task = super.viewAsBasicDTO();
 		return new BasicMaintainanceOutputDTO(task.getId(), task.getDescription(), task.getReportedAt(),
 				task.getScheduledDate(), task.getProductId(), task.getProductName(), task.getTechnicianId(),
-				task.getTechnicianName(), maintainanceType, status);
+				task.getTechnicianName(), maintainanceType, status, task.getClientId(), task.getClientName());
+	}
+
+	@JsonIgnore
+	public MaintainanceOutputDTO viewAsDTO() {
+		return new MaintainanceOutputDTO(getId(), DateTimeUtil.fomatToLongDateTime(createdAt), createdBy,
+				DateTimeUtil.fomatToLongDateTime(modifiedAt), modifiedBy, getDescription(), getReportedAt(),
+				getScheduledDate(), getTargetCompletionDate(), getProduct().viewAsDTO(),
+				getTechnician() != null ? getTechnician().viewAsDTO() : null, getCompletionNote(), getAdditionalNote(),
+				maintainanceType, status);
 	}
 
 }

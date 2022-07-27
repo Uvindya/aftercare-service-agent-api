@@ -24,6 +24,7 @@ import com.cbmachinery.aftercareserviceagent.common.audit.Auditable;
 import com.cbmachinery.aftercareserviceagent.notification.model.Notification;
 import com.cbmachinery.aftercareserviceagent.product.model.Product;
 import com.cbmachinery.aftercareserviceagent.task.dto.BasicTaskOutputDTO;
+import com.cbmachinery.aftercareserviceagent.user.model.Client;
 import com.cbmachinery.aftercareserviceagent.user.model.Technician;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -76,8 +77,9 @@ public abstract class Task extends Auditable<String> {
 			techId = technician.getId();
 			techName = technician.getFullName();
 		}
+		Client client = product.getClient();
 		return new BasicTaskOutputDTO(id, description, reportedAt, scheduledDate, product.getId(), product.getName(),
-				techId, techName);
+				techId, techName, client.getId(), client.getFullName());
 	}
 
 }

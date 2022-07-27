@@ -24,5 +24,7 @@ public class BasicTaskOutputDTO {
 	private final String productName;
 	private final long technicianId;
 	private final String technicianName;
+	private final long clientId;
+	private final String clientName;
 
 }

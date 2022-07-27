@@ -37,7 +37,7 @@ public class CbMachineryAfterCareServiceAgentApplication {
 
 	@PostConstruct
 	public void init() {
-		TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+		TimeZone.setDefault(TimeZone.getTimeZone("Asia/Kolkata"));
 		loadDefaultAdmin();
 	}
 
