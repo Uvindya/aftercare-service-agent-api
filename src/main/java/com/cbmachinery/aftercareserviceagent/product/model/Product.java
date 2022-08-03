@@ -1,8 +1,10 @@
 package com.cbmachinery.aftercareserviceagent.product.model;
 
+import java.time.Year;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -47,7 +49,16 @@ public class Product extends Auditable<String> {
 	private int maintainnanceInterval;
 	private String erpId;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@Column(columnDefinition = "TEXT")
+	private String description;
+
+	private String countryOfOrigin;
+	private String make;
+	private String model;
+	private Year manufactureYear;
+	private String serialNumber;
+
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	@JoinColumn(name = "client_id", nullable = false)
 	private Client client;
 
@@ -60,14 +71,15 @@ public class Product extends Auditable<String> {
 	@JsonIgnore
 	public BasicProductOutputDTO viewAsBasicDTO() {
 		return new BasicProductOutputDTO(id, DateTimeUtil.fomatToLongDateTime(createdAt), name, warrentyPeriod, erpId,
-				client.getId(), client.getFullName());
+				client.getId(), client.getFullName(), serialNumber);
 	}
 
 	@JsonIgnore
 	public ProductOutputDTO viewAsDTO() {
 		return new ProductOutputDTO(id, DateTimeUtil.fomatToLongDateTime(createdAt), createdBy,
 				DateTimeUtil.fomatToLongDateTime(modifiedAt), modifiedBy, name, warrentyPeriod, maintainnanceInterval,
-				erpId, client.viewAsBasicDTO());
+				erpId, client.viewAsBasicDTO(), description, countryOfOrigin, make, model, manufactureYear,
+				serialNumber);
 	}
 
 }

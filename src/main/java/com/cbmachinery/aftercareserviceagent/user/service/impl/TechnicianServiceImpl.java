@@ -39,7 +39,8 @@ public class TechnicianServiceImpl implements TechnicianService {
 		Technician technicianToSave = Technician.builder().yearOfExperience(technicianInput.getYearOfExperience())
 				.email(technicianInput.getEmail()).firstName(technicianInput.getFirstName())
 				.gender(technicianInput.getGender()).lastName(technicianInput.getLastName())
-				.primaryPhoneNo(technicianInput.getPrimaryPhoneNo()).userCredential(userCredential).build();
+				.erpId(technicianInput.getErpId()).primaryPhoneNo(technicianInput.getPrimaryPhoneNo())
+				.userCredential(userCredential).build();
 		return technicianRepository.save(technicianToSave).viewAsBasicDTO();
 	}
 
@@ -50,8 +51,8 @@ public class TechnicianServiceImpl implements TechnicianService {
 		}
 
 		return technicianRepository
-				.findAllByEmailContainingIgnoreCaseOrFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
-						searchTerm, searchTerm, searchTerm, pageable)
+				.findAllByEmailContainingIgnoreCaseOrFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseOrErpIdContainingIgnoreCase(
+						searchTerm, searchTerm, searchTerm, searchTerm, pageable)
 				.map(Technician::viewAsBasicDTO);
 	}
 

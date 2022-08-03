@@ -7,6 +7,6 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import com.cbmachinery.aftercareserviceagent.user.model.Client;
 
 public interface ClientRepository extends PagingAndSortingRepository<Client, Long> {
-	Page<Client> findAllByEmailContainingIgnoreCaseOrFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
-			String email, String firstName, String lastName, Pageable pageable);
+	Page<Client> findAllByEmailContainingIgnoreCaseOrFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseOrErpIdContainingIgnoreCase(
+			String email, String firstName, String lastName, String erpId, Pageable pageable);
 }

@@ -1,5 +1,7 @@
 package com.cbmachinery.aftercareserviceagent.product.dto;
 
+import java.time.Year;
+
 import com.cbmachinery.aftercareserviceagent.user.dto.BasicUserOutputDTO;
 
 import lombok.Getter;
@@ -19,5 +21,11 @@ public class ProductOutputDTO {
 	private final int maintainnanceInterval;
 	private final String erpId;
 	private final BasicUserOutputDTO client;
+	private final String description;
+	private final String countryOfOrigin;
+	private final String make;
+	private final String model;
+	private final Year manufactureYear;
+	private final String serialNumber;
 
 }

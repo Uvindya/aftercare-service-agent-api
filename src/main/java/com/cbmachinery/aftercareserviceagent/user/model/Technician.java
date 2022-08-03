@@ -48,7 +48,7 @@ public class Technician extends User {
 	public TechnicianOutputDTO viewAsDTO() {
 		return new TechnicianOutputDTO(getId(), DateTimeUtil.fomatToLongDateTime(createdAt), createdBy,
 				DateTimeUtil.fomatToLongDateTime(modifiedAt), modifiedBy, getFirstName(), getLastName(), getEmail(),
-				getPrimaryPhoneNo(), getGender(), yearOfExperience);
+				getPrimaryPhoneNo(), getGender(), yearOfExperience, getErpId());
 	}
 
 }

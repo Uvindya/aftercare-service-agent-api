@@ -12,5 +12,6 @@ public class BasicUserOutputDTO {
 	private final String email;
 	private final String primaryPhoneNo;
 	private final boolean status;
+	private final String erpId;
 
 }

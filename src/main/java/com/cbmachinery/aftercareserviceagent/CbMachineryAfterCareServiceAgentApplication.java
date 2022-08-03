@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @EnableAsync
 public class CbMachineryAfterCareServiceAgentApplication {
 
-	private static final String DEFAULT_ADMIN_USERNAME = "ams.amila@gmail.com";
+	private static final String DEFAULT_ADMIN_USERNAME = "uvindya.akmeemanage@gmail.com";
 	private final UserCredentialRepository userCredentialRepository;
 	private final PasswordEncoder passwordEncoder;
 

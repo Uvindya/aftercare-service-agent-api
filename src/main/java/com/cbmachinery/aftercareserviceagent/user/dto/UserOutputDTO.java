@@ -19,5 +19,6 @@ public class UserOutputDTO {
 	private final String email;
 	private final String primaryPhoneNo;
 	private final Gender gender;
+	private final String erpId;
 
 }

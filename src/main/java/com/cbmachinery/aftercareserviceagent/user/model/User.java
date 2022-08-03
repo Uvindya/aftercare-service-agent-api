@@ -51,6 +51,8 @@ public abstract class User extends Auditable<String> {
 	@Enumerated(EnumType.STRING)
 	private Gender gender;
 
+	private String erpId;
+
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "user_credential_id", referencedColumnName = "id")
 	private UserCredential userCredential;
@@ -60,7 +62,8 @@ public abstract class User extends Auditable<String> {
 
 	@JsonIgnore
 	public BasicUserOutputDTO viewAsBasicDTO() {
-		return new BasicUserOutputDTO(id, firstName + " " + lastName, email, primaryPhoneNo, userCredential.isActive());
+		return new BasicUserOutputDTO(id, firstName + " " + lastName, email, primaryPhoneNo, userCredential.isActive(),
+				erpId);
 	}
 
 	@JsonIgnore

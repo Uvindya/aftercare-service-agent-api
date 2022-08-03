@@ -50,6 +50,9 @@ public class ProductServiceImpl implements ProductService {
 
 		Product productToSave = Product.builder().client(client).erpId(productInput.getErpId())
 				.maintainnanceInterval(productInput.getMaintainnanceInterval()).name(productInput.getName())
+				.description(productInput.getDescription()).countryOfOrigin(productInput.getCountryOfOrigin())
+				.make(productInput.getMake()).model(productInput.getModel())
+				.manufactureYear(productInput.getManufactureYear()).serialNumber(productInput.getSerialNumber())
 				.warrentyPeriod(productInput.getWarrentyPeriod()).build();
 
 		Product savedProduct = this.productRepository.save(productToSave);
@@ -63,9 +66,10 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public Page<BasicProductOutputDTO> findAll(Pageable pageable, String searchTerm) {
 		if (Objects.isNull(searchTerm)) {
-		return productRepository.findAll(pageable).map(Product::viewAsBasicDTO);
+			return productRepository.findAll(pageable).map(Product::viewAsBasicDTO);
 		}
-		return productRepository.findByParams(searchTerm, searchTerm, searchTerm,pageable).map(Product::viewAsBasicDTO);
+		return productRepository.findByParams(searchTerm, searchTerm, searchTerm, searchTerm, pageable)
+				.map(Product::viewAsBasicDTO);
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package com.cbmachinery.aftercareserviceagent.task.model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -35,5 +36,11 @@ public class Breakdown extends Task {
 
 	@Enumerated(EnumType.STRING)
 	private BreakdownStatus status;
+
+	@Column(columnDefinition = "TEXT")
+	private String rootCause;
+
+	@Column(columnDefinition = "TEXT")
+	private String solution;
 
 }

@@ -31,7 +31,8 @@ public class Client extends User {
 	public ClientOutputDTO viewAsDTO() {
 		return new ClientOutputDTO(getId(), DateTimeUtil.fomatToLongDateTime(createdAt), createdBy,
 				DateTimeUtil.fomatToLongDateTime(modifiedAt), modifiedBy, getFirstName(), getLastName(), getEmail(),
-				getPrimaryPhoneNo(), getGender(), addressLine1, addressLine2, city, district, secondaryPhoneNo);
+				getPrimaryPhoneNo(), getGender(), addressLine1, addressLine2, city, district, secondaryPhoneNo,
+				getErpId());
 	}
 
 }

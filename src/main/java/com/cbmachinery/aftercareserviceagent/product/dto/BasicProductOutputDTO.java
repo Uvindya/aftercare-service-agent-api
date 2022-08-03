@@ -14,5 +14,6 @@ public class BasicProductOutputDTO {
 	private final String erpId;
 	private final long clientId;
 	private final String clientName;
+	private final String serialNumber;
 
 }

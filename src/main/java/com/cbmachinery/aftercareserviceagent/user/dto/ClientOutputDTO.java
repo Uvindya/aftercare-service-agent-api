@@ -15,8 +15,9 @@ public class ClientOutputDTO extends UserOutputDTO {
 
 	public ClientOutputDTO(long id, String createdAt, String createdBy, String modifiedAt, String modifiedBy,
 			String firstName, String lastName, String email, String primaryPhoneNo, Gender gender, String addressLine1,
-			String addressLine2, String city, String district, String secondaryPhoneNo) {
-		super(id, createdAt, createdBy, modifiedAt, modifiedBy, firstName, lastName, email, primaryPhoneNo, gender);
+			String addressLine2, String city, String district, String secondaryPhoneNo, String erpId) {
+		super(id, createdAt, createdBy, modifiedAt, modifiedBy, firstName, lastName, email, primaryPhoneNo, gender,
+				erpId);
 		this.addressLine1 = addressLine1;
 		this.addressLine2 = addressLine2;
 		this.city = city;

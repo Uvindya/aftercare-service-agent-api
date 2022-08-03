@@ -43,7 +43,7 @@ public class ClientServiceImpl implements ClientService {
 				.district(clientInput.getDistrict()).email(clientInput.getEmail()).firstName(clientInput.getFirstName())
 				.gender(clientInput.getGender()).lastName(clientInput.getLastName())
 				.primaryPhoneNo(clientInput.getPrimaryPhoneNo()).secondaryPhoneNo(clientInput.getSecondaryPhoneNo())
-				.userCredential(userCredential).build();
+				.erpId(clientInput.getErpId()).userCredential(userCredential).build();
 		return clientRepository.save(clientToSave).viewAsBasicDTO();
 	}
 
@@ -54,8 +54,8 @@ public class ClientServiceImpl implements ClientService {
 		}
 
 		return clientRepository
-				.findAllByEmailContainingIgnoreCaseOrFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
-						searchTerm, searchTerm, searchTerm, pageable)
+				.findAllByEmailContainingIgnoreCaseOrFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCaseOrErpIdContainingIgnoreCase(
+						searchTerm, searchTerm, searchTerm, searchTerm, pageable)
 				.map(Client::viewAsBasicDTO);
 	}
 

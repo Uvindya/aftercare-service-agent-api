@@ -10,13 +10,15 @@ import lombok.Getter;
 public class TechnicianInputDTO extends UserInputDTO {
 
 	private final int yearOfExperience;
+	private final String erpId;
 
 	@JsonCreator
 	public TechnicianInputDTO(@JsonProperty("firstName") String firstName, @JsonProperty("lastName") String lastName,
 			@JsonProperty("email") String email, @JsonProperty("primaryPhoneNo") String primaryPhoneNo,
 			@JsonProperty("gender") Gender gender, @JsonProperty("password") String password,
-			@JsonProperty("yearOfExperience") int yearOfExperience) {
+			@JsonProperty("yearOfExperience") int yearOfExperience, @JsonProperty("erpId") String erpId) {
 		super(firstName, lastName, email, primaryPhoneNo, gender, password);
 		this.yearOfExperience = yearOfExperience;
+		this.erpId = erpId;
 	}
 }
