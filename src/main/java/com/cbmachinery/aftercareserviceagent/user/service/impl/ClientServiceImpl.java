@@ -1,13 +1,20 @@
 package com.cbmachinery.aftercareserviceagent.user.service.impl;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.cbmachinery.aftercareserviceagent.auth.dto.UserCredentialInputDTO;
 import com.cbmachinery.aftercareserviceagent.auth.model.UserCredential;
@@ -18,10 +25,14 @@ import com.cbmachinery.aftercareserviceagent.user.dto.BasicUserOutputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.ClientInputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.ClientOutputDTO;
 import com.cbmachinery.aftercareserviceagent.user.model.Client;
+import com.cbmachinery.aftercareserviceagent.user.model.enums.Gender;
 import com.cbmachinery.aftercareserviceagent.user.repository.ClientRepository;
 import com.cbmachinery.aftercareserviceagent.user.service.ClientService;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class ClientServiceImpl implements ClientService {
 
 	private final UserCredentialService userCredentialService;
@@ -75,6 +86,29 @@ public class ClientServiceImpl implements ClientService {
 		return StreamSupport.stream(clientRepository.findAll().spliterator(), false).map(Client::viewAsBasicDTO)
 				.collect(Collectors.toList());
 
+	}
+
+	@Override
+	public void importFromCSV(MultipartFile csv) {
+		try {
+			BufferedReader fileReader = new BufferedReader(new InputStreamReader(csv.getInputStream(), "UTF-8"));
+			CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT);
+			Iterable<CSVRecord> csvRecords = csvParser.getRecords();
+			int row = 0;
+
+			for (CSVRecord cr : csvRecords) {
+				if (row != 0) {
+					save(new ClientInputDTO(cr.get(0), cr.get(1), cr.get(2), cr.get(3), Gender.valueOf(cr.get(6)),
+							"Zaq1xsw2@", cr.get(7), cr.get(8), cr.get(9), cr.get(10), cr.get(4), cr.get(5)));
+				}
+
+				row++;
+			}
+
+			csvParser.close();
+		} catch (IOException e) {
+			log.error("Error in Client import !!!");
+		}
 	}
 
 }

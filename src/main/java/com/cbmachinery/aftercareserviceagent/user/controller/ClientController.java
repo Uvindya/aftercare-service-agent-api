@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.cbmachinery.aftercareserviceagent.user.dto.BasicUserOutputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.ClientInputDTO;
@@ -35,6 +36,12 @@ public class ClientController {
 	@PostMapping
 	public ResponseEntity<BasicUserOutputDTO> saveClient(@Valid @RequestBody ClientInputDTO clientInput) {
 		return new ResponseEntity<>(clientService.save(clientInput), HttpStatus.CREATED);
+	}
+	
+	@PostMapping("/import")
+	public ResponseEntity<BasicUserOutputDTO> importClients(@RequestParam("file") MultipartFile file) {
+		clientService.importFromCSV(file);
+		return new ResponseEntity<>(null, HttpStatus.CREATED);
 	}
 
 	@GetMapping

@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.cbmachinery.aftercareserviceagent.user.dto.BasicUserOutputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.ClientInputDTO;
@@ -20,5 +21,7 @@ public interface ClientService {
 	Client findById(long id);
 
 	List<BasicUserOutputDTO> findAll();
+
+	void importFromCSV(MultipartFile csv);
 
 }
