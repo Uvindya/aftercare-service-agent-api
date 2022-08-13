@@ -1,5 +1,7 @@
 package com.cbmachinery.aftercareserviceagent.auth.service;
 
+import java.util.List;
+
 import com.cbmachinery.aftercareserviceagent.auth.dto.UserCredentialInputDTO;
 import com.cbmachinery.aftercareserviceagent.auth.model.UserCredential;
 
@@ -13,4 +15,6 @@ public interface UserCredentialService {
 	UserCredential findById(long id);
 
 	void changeActiveStatus(String username, boolean active);
+
+	boolean usernamesExists(List<String> usernames);
 }

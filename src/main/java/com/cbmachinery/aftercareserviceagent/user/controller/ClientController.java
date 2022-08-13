@@ -37,9 +37,9 @@ public class ClientController {
 	public ResponseEntity<BasicUserOutputDTO> saveClient(@Valid @RequestBody ClientInputDTO clientInput) {
 		return new ResponseEntity<>(clientService.save(clientInput), HttpStatus.CREATED);
 	}
-	
+
 	@PostMapping("/import")
-	public ResponseEntity<BasicUserOutputDTO> importClients(@RequestParam("file") MultipartFile file) {
+	public ResponseEntity<BasicUserOutputDTO> importFromCSV(@RequestParam("file") MultipartFile file) {
 		clientService.importFromCSV(file);
 		return new ResponseEntity<>(null, HttpStatus.CREATED);
 	}

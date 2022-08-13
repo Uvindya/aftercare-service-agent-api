@@ -20,6 +20,8 @@ public interface ClientService {
 
 	Client findById(long id);
 
+	Client findByUsername(String username);
+
 	List<BasicUserOutputDTO> findAll();
 
 	void importFromCSV(MultipartFile csv);

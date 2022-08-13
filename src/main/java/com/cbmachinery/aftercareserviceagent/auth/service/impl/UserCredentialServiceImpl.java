@@ -1,5 +1,7 @@
 package com.cbmachinery.aftercareserviceagent.auth.service.impl;
 
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.springframework.context.annotation.Lazy;
@@ -65,6 +67,12 @@ public class UserCredentialServiceImpl implements UserCredentialService {
 	@Override
 	public void changeActiveStatus(String username, boolean active) {
 		this.userCredentialRepository.changeActiveStatus(username, active);
+	}
+
+	@Override
+	public boolean usernamesExists(List<String> usernames) {
+		List<UserCredential> existingUsers = this.userCredentialRepository.findByUsernameIn(usernames);
+		return existingUsers.size() > 0;
 	}
 
 }

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.cbmachinery.aftercareserviceagent.user.dto.BasicUserOutputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.TechnicianInputDTO;
@@ -33,6 +34,12 @@ public class TechnicianController {
 	@PostMapping
 	public ResponseEntity<BasicUserOutputDTO> save(@Valid @RequestBody TechnicianInputDTO technicianInput) {
 		return new ResponseEntity<>(technicianService.save(technicianInput), HttpStatus.CREATED);
+	}
+
+	@PostMapping("/import")
+	public ResponseEntity<BasicUserOutputDTO> importFromCSV(@RequestParam("file") MultipartFile file) {
+		technicianService.importFromCSV(file);
+		return new ResponseEntity<>(null, HttpStatus.CREATED);
 	}
 
 	@GetMapping

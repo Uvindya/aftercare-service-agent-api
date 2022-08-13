@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.cbmachinery.aftercareserviceagent.product.dto.BasicProductOutputDTO;
 import com.cbmachinery.aftercareserviceagent.product.dto.ProductInputDTO;
@@ -44,6 +45,12 @@ public class ProductController {
 	@GetMapping("/{id}")
 	public ResponseEntity<ProductOutputDTO> findById(@PathVariable long id) {
 		return ResponseEntity.ok(productService.findByIdAsDTO(id));
+	}
+
+	@PostMapping("/import")
+	public ResponseEntity<BasicProductOutputDTO> importFromCSV(@RequestParam("file") MultipartFile file) {
+		productService.importFromCSV(file);
+		return new ResponseEntity<>(null, HttpStatus.CREATED);
 	}
 
 }

@@ -1,10 +1,20 @@
 package com.cbmachinery.aftercareserviceagent.product.service.impl;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.time.Year;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.cbmachinery.aftercareserviceagent.common.exception.ResourceNotFoundException;
 import com.cbmachinery.aftercareserviceagent.product.dto.BasicProductOutputDTO;
@@ -75,6 +85,37 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public ProductOutputDTO findByIdAsDTO(long id) {
 		return findById(id).viewAsDTO();
+	}
+
+	@Override
+	public void importFromCSV(MultipartFile csv) {
+		CSVParser csvParser;
+
+		try {
+			BufferedReader fileReader = new BufferedReader(new InputStreamReader(csv.getInputStream(), "UTF-8"));
+			csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT);
+			Iterable<CSVRecord> csvRecords = csvParser.getRecords();
+			int row = 0;
+
+			List<ProductInputDTO> productsInputs = new ArrayList<>();
+
+			for (CSVRecord cr : csvRecords) {
+				if (row != 0) {
+					Client client = this.clientService.findByUsername(cr.get(4));
+					productsInputs.add(new ProductInputDTO(cr.get(0), Integer.parseInt(cr.get(1)),
+							Integer.parseInt(cr.get(2)), cr.get(3), client.getId(), cr.get(5), cr.get(6), cr.get(7),
+							cr.get(8), Year.of(Integer.parseInt(cr.get(9))), cr.get(10)));
+				}
+
+				row++;
+			}
+
+			productsInputs.stream().forEach(pi -> save(pi));
+
+			csvParser.close();
+		} catch (IOException e) {
+			throw new IllegalArgumentException("Error in Client import !!!");
+		}
 	}
 
 }

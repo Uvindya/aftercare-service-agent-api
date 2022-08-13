@@ -3,8 +3,11 @@ package com.cbmachinery.aftercareserviceagent.user.service.impl;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -29,10 +32,7 @@ import com.cbmachinery.aftercareserviceagent.user.model.enums.Gender;
 import com.cbmachinery.aftercareserviceagent.user.repository.ClientRepository;
 import com.cbmachinery.aftercareserviceagent.user.service.ClientService;
 
-import lombok.extern.slf4j.Slf4j;
-
 @Service
-@Slf4j
 public class ClientServiceImpl implements ClientService {
 
 	private final UserCredentialService userCredentialService;
@@ -90,25 +90,47 @@ public class ClientServiceImpl implements ClientService {
 
 	@Override
 	public void importFromCSV(MultipartFile csv) {
+		CSVParser csvParser;
+
 		try {
 			BufferedReader fileReader = new BufferedReader(new InputStreamReader(csv.getInputStream(), "UTF-8"));
-			CSVParser csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT);
+			csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT);
 			Iterable<CSVRecord> csvRecords = csvParser.getRecords();
 			int row = 0;
 
+			List<ClientInputDTO> clientInputs = new ArrayList<>();
+			List<String> usernames = new ArrayList<>();
+
 			for (CSVRecord cr : csvRecords) {
 				if (row != 0) {
-					save(new ClientInputDTO(cr.get(0), cr.get(1), cr.get(2), cr.get(3), Gender.valueOf(cr.get(6)),
-							"Zaq1xsw2@", cr.get(7), cr.get(8), cr.get(9), cr.get(10), cr.get(4), cr.get(5)));
+					usernames.add(cr.get(2));
+					clientInputs.add(
+							new ClientInputDTO(cr.get(0), cr.get(1), cr.get(2), cr.get(3), Gender.valueOf(cr.get(6)),
+									"Zaq1xsw2@", cr.get(7), cr.get(8), cr.get(9), cr.get(10), cr.get(4), cr.get(5)));
 				}
 
 				row++;
 			}
 
+			// check for duplicate users in the file & system
+			Set<String> filteredUsernames = new HashSet<>(usernames);
+
+			if ((filteredUsernames.size() < usernames.size()) || userCredentialService.usernamesExists(usernames)) {
+				throw new IllegalArgumentException("Duplicate Usernames inside the file");
+			}
+
+			clientInputs.stream().forEach(ci -> save(ci));
+
 			csvParser.close();
 		} catch (IOException e) {
-			log.error("Error in Client import !!!");
+			throw new IllegalArgumentException("Error in Client import !!!");
 		}
+	}
+
+	@Override
+	public Client findByUsername(String username) {
+		return clientRepository.findByEmail(username)
+				.orElseThrow(() -> new ResourceNotFoundException("No Client found for this ID"));
 	}
 
 }
