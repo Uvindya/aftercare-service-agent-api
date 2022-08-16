@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cbmachinery.aftercareserviceagent.common.exception.ResourceNotFoundException;
 import com.cbmachinery.aftercareserviceagent.product.model.Product;
@@ -13,22 +14,27 @@ import com.cbmachinery.aftercareserviceagent.product.service.ProductService;
 import com.cbmachinery.aftercareserviceagent.task.dto.BasicMaintainanceOutputDTO;
 import com.cbmachinery.aftercareserviceagent.task.dto.MaintainanceInputDTO;
 import com.cbmachinery.aftercareserviceagent.task.dto.MaintainanceOutputDTO;
+import com.cbmachinery.aftercareserviceagent.task.dto.TechnicianTaskAssignmentDTO;
 import com.cbmachinery.aftercareserviceagent.task.model.Maintainance;
 import com.cbmachinery.aftercareserviceagent.task.model.enums.MaintainanceStatus;
 import com.cbmachinery.aftercareserviceagent.task.repository.MaintainanceRepository;
 import com.cbmachinery.aftercareserviceagent.task.service.MaintainanceService;
+import com.cbmachinery.aftercareserviceagent.user.model.Technician;
+import com.cbmachinery.aftercareserviceagent.user.service.TechnicianService;
 
 @Service
 public class MaintainanceServiceImpl implements MaintainanceService {
 
 	private final MaintainanceRepository maintainanceRepository;
 	private final ProductService productService;
+	private final TechnicianService technicianService;
 
 	public MaintainanceServiceImpl(final MaintainanceRepository maintainanceRepository,
-			@Lazy ProductService productService) {
+			@Lazy ProductService productService, @Lazy TechnicianService technicianService) {
 		super();
 		this.maintainanceRepository = maintainanceRepository;
 		this.productService = productService;
+		this.technicianService = technicianService;
 	}
 
 	@Override
@@ -44,11 +50,11 @@ public class MaintainanceServiceImpl implements MaintainanceService {
 
 	@Override
 	public Page<BasicMaintainanceOutputDTO> findAll(Pageable pageable, String searchTerm) {
-		//if (Objects.isNull(searchTerm)) {
-			return maintainanceRepository.findAll(pageable).map(Maintainance::viewAsBasicDTO);
-		//}
+		// if (Objects.isNull(searchTerm)) {
+		return maintainanceRepository.findAll(pageable).map(Maintainance::viewAsBasicDTO);
+		// }
 
-		//return null;
+		// return null;
 
 		/*
 		 * return technicianRepository
@@ -62,6 +68,14 @@ public class MaintainanceServiceImpl implements MaintainanceService {
 	public MaintainanceOutputDTO findById(long id) {
 		return maintainanceRepository.findById(id).map(Maintainance::viewAsDTO)
 				.orElseThrow(() -> new ResourceNotFoundException("No Maintainance found for this ID"));
+	}
+
+	@Override
+	@Transactional
+	public MaintainanceOutputDTO assignTechnician(TechnicianTaskAssignmentDTO technicianTaskAssignment) {
+		Technician technician = this.technicianService.findByIdAsRaw(technicianTaskAssignment.getTechnicianId());
+		maintainanceRepository.assignTechnician(technicianTaskAssignment.getTaskId(), technician);
+		return findById(technicianTaskAssignment.getTaskId());
 	}
 
 }

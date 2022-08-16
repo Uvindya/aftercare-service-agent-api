@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import com.cbmachinery.aftercareserviceagent.task.dto.BasicMaintainanceOutputDTO;
 import com.cbmachinery.aftercareserviceagent.task.dto.MaintainanceInputDTO;
 import com.cbmachinery.aftercareserviceagent.task.dto.MaintainanceOutputDTO;
+import com.cbmachinery.aftercareserviceagent.task.dto.TechnicianTaskAssignmentDTO;
 
 public interface MaintainanceService {
 	BasicMaintainanceOutputDTO save(MaintainanceInputDTO maintainanceInput);
@@ -13,4 +14,6 @@ public interface MaintainanceService {
 	Page<BasicMaintainanceOutputDTO> findAll(Pageable pageable, String searchTerm);
 
 	MaintainanceOutputDTO findById(long id);
+
+	MaintainanceOutputDTO assignTechnician(TechnicianTaskAssignmentDTO technicianTaskAssignment);
 }

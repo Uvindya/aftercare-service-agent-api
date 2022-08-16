@@ -8,6 +8,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -46,7 +48,7 @@ public class TechnicianServiceImpl implements TechnicianService {
 	@Override
 	public BasicUserOutputDTO save(TechnicianInputDTO technicianInput) {
 		UserCredential userCredential = userCredentialService.save(
-				new UserCredentialInputDTO(technicianInput.getEmail(), technicianInput.getPassword(), Role.CLIENT));
+				new UserCredentialInputDTO(technicianInput.getEmail(), technicianInput.getPassword(), Role.TECHNICIAN));
 
 		Technician technicianToSave = Technician.builder().yearOfExperience(technicianInput.getYearOfExperience())
 				.email(technicianInput.getEmail()).firstName(technicianInput.getFirstName())
@@ -110,6 +112,19 @@ public class TechnicianServiceImpl implements TechnicianService {
 		} catch (IOException e) {
 			throw new IllegalArgumentException("Error in Technician import !!!");
 		}
+	}
+
+	@Override
+	public List<BasicUserOutputDTO> findAll() {
+		return StreamSupport.stream(technicianRepository.findAll().spliterator(), false).map(Technician::viewAsBasicDTO)
+				.collect(Collectors.toList());
+
+	}
+
+	@Override
+	public Technician findByIdAsRaw(long id) {
+		return technicianRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("No Technician found for this ID"));
 	}
 
 }
