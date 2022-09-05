@@ -1,5 +1,8 @@
 package com.cbmachinery.aftercareserviceagent.task.controller;
 
+import java.util.List;
+
+import org.springframework.boot.actuate.trace.http.HttpTrace.Principal;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -42,6 +45,11 @@ public class MaintainanceController {
 	public ResponseEntity<MaintainanceOutputDTO> assignTechnician(
 			@RequestBody TechnicianTaskAssignmentDTO technicianTaskAssignment) {
 		return ResponseEntity.ok(maintainanceService.assignTechnician(technicianTaskAssignment));
+	}
+
+	@GetMapping("/my-assigns")
+	public ResponseEntity<List<BasicMaintainanceOutputDTO>> findMyAssigns(Principal principal) {
+		return ResponseEntity.ok(maintainanceService.findMyAssigns(principal.getName()));
 	}
 
 }

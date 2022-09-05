@@ -23,4 +23,6 @@ public interface TechnicianService {
 	void importFromCSV(MultipartFile csv);
 
 	List<BasicUserOutputDTO> findAll();
+
+	Technician findByUsername(String username);
 }

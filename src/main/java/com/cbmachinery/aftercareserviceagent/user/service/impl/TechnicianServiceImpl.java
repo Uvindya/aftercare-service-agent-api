@@ -127,4 +127,10 @@ public class TechnicianServiceImpl implements TechnicianService {
 				.orElseThrow(() -> new ResourceNotFoundException("No Technician found for this ID"));
 	}
 
+	@Override
+	public Technician findByUsername(String username) {
+		return technicianRepository.findByEmail(username)
+				.orElseThrow(() -> new ResourceNotFoundException("No Technician found for this ID"));
+	}
+
 }

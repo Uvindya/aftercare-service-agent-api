@@ -1,6 +1,8 @@
 package com.cbmachinery.aftercareserviceagent.task.service.impl;
 
 import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
@@ -76,6 +78,13 @@ public class MaintainanceServiceImpl implements MaintainanceService {
 		Technician technician = this.technicianService.findByIdAsRaw(technicianTaskAssignment.getTechnicianId());
 		maintainanceRepository.assignTechnician(technicianTaskAssignment.getTaskId(), technician);
 		return findById(technicianTaskAssignment.getTaskId());
+	}
+
+	@Override
+	public List<BasicMaintainanceOutputDTO> findMyAssigns(String username) {
+		Technician technician = technicianService.findByUsername(username);
+		return technician.getAssignedMaintainances().stream().map(Maintainance::viewAsBasicDTO)
+				.collect(Collectors.toList());
 	}
 
 }
