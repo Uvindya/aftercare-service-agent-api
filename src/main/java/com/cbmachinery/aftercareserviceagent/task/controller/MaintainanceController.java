@@ -2,10 +2,12 @@ package com.cbmachinery.aftercareserviceagent.task.controller;
 
 import java.util.List;
 
-import org.springframework.boot.actuate.trace.http.HttpTrace.Principal;
+import javax.validation.Valid;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -16,7 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cbmachinery.aftercareserviceagent.task.dto.BasicMaintainanceOutputDTO;
 import com.cbmachinery.aftercareserviceagent.task.dto.MaintainanceOutputDTO;
+import com.cbmachinery.aftercareserviceagent.task.dto.NotesInputDTO;
 import com.cbmachinery.aftercareserviceagent.task.dto.TechnicianTaskAssignmentDTO;
+import com.cbmachinery.aftercareserviceagent.task.model.enums.MaintainanceStatus;
 import com.cbmachinery.aftercareserviceagent.task.service.MaintainanceService;
 
 @RestController
@@ -47,9 +51,26 @@ public class MaintainanceController {
 		return ResponseEntity.ok(maintainanceService.assignTechnician(technicianTaskAssignment));
 	}
 
+	@PutMapping("/{id}/start")
+	public ResponseEntity<MaintainanceOutputDTO> startMaintainance(@PathVariable long id) {
+		return ResponseEntity.ok(maintainanceService.changeStatus(id, MaintainanceStatus.IN_PROGRESS));
+	}
+
+	@PutMapping("/{id}/complete")
+	public ResponseEntity<MaintainanceOutputDTO> completeMaintainance(@PathVariable long id) {
+		return ResponseEntity.ok(maintainanceService.changeStatus(id, MaintainanceStatus.NEEDS_CLIENTS_ACCEPTENCE));
+	}
+
+	@PutMapping("/{id}/notes")
+	public ResponseEntity<MaintainanceOutputDTO> addMaintainanceNotes(@PathVariable long id,
+			@Valid @RequestBody NotesInputDTO notesInput) {
+		return ResponseEntity.ok(maintainanceService.addNotes(id, notesInput));
+	}
+
 	@GetMapping("/my-assigns")
-	public ResponseEntity<List<BasicMaintainanceOutputDTO>> findMyAssigns(Principal principal) {
-		return ResponseEntity.ok(maintainanceService.findMyAssigns(principal.getName()));
+	public ResponseEntity<List<BasicMaintainanceOutputDTO>> findMyAssigns() {
+		return ResponseEntity.ok(
+				maintainanceService.findMyAssigns(SecurityContextHolder.getContext().getAuthentication().getName()));
 	}
 
 }

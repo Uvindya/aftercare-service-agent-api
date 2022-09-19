@@ -1,6 +1,7 @@
 package com.cbmachinery.aftercareserviceagent.task.service.impl;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,6 +17,7 @@ import com.cbmachinery.aftercareserviceagent.product.service.ProductService;
 import com.cbmachinery.aftercareserviceagent.task.dto.BasicMaintainanceOutputDTO;
 import com.cbmachinery.aftercareserviceagent.task.dto.MaintainanceInputDTO;
 import com.cbmachinery.aftercareserviceagent.task.dto.MaintainanceOutputDTO;
+import com.cbmachinery.aftercareserviceagent.task.dto.NotesInputDTO;
 import com.cbmachinery.aftercareserviceagent.task.dto.TechnicianTaskAssignmentDTO;
 import com.cbmachinery.aftercareserviceagent.task.model.Maintainance;
 import com.cbmachinery.aftercareserviceagent.task.model.enums.MaintainanceStatus;
@@ -76,15 +78,30 @@ public class MaintainanceServiceImpl implements MaintainanceService {
 	@Transactional
 	public MaintainanceOutputDTO assignTechnician(TechnicianTaskAssignmentDTO technicianTaskAssignment) {
 		Technician technician = this.technicianService.findByIdAsRaw(technicianTaskAssignment.getTechnicianId());
-		maintainanceRepository.assignTechnician(technicianTaskAssignment.getTaskId(), technician);
+		maintainanceRepository.assignTechnician(technicianTaskAssignment.getTaskId(), technician,
+				MaintainanceStatus.TECH_ASSIGNED);
 		return findById(technicianTaskAssignment.getTaskId());
 	}
 
 	@Override
 	public List<BasicMaintainanceOutputDTO> findMyAssigns(String username) {
 		Technician technician = technicianService.findByUsername(username);
-		return technician.getAssignedMaintainances().stream().map(Maintainance::viewAsBasicDTO)
-				.collect(Collectors.toList());
+		return technician.getAssignedMaintainances().stream().sorted(Comparator.comparing(Maintainance::getModifiedAt))
+				.map(Maintainance::viewAsBasicDTO).collect(Collectors.toList());
+	}
+
+	@Override
+	@Transactional
+	public MaintainanceOutputDTO changeStatus(long id, MaintainanceStatus status) {
+		maintainanceRepository.changeStatus(id, status);
+		return findById(id);
+	}
+
+	@Override
+	@Transactional
+	public MaintainanceOutputDTO addNotes(long id, NotesInputDTO notesInput) {
+		maintainanceRepository.addNotes(id, notesInput.getCompletionNote(), notesInput.getAdditionalNote());
+		return findById(id);
 	}
 
 }
