@@ -1,9 +1,35 @@
 package com.cbmachinery.aftercareserviceagent.task.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.time.LocalDateTime;
+import java.util.List;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import com.cbmachinery.aftercareserviceagent.product.model.Product;
 import com.cbmachinery.aftercareserviceagent.task.model.Breakdown;
+import com.cbmachinery.aftercareserviceagent.task.model.enums.BreakdownStatus;
+import com.cbmachinery.aftercareserviceagent.user.model.Technician;
 
 public interface BreakdownRepository extends JpaRepository<Breakdown, Long> {
 
+	@Modifying
+	@Query("update Breakdown m set m.technician =:technician, m.status =:status, m.modifiedAt=:modifiedAt where m.id =:id")
+	void assignTechnician(@Param("id") long id, @Param("technician") Technician technician,
+			@Param("status") BreakdownStatus status, @Param("modifiedAt") LocalDateTime modifiedAt);
+
+	@Modifying
+	@Query("update Breakdown m set m.status =:status, m.modifiedAt=:modifiedAt where m.id =:id")
+	void changeStatus(@Param("id") long id, @Param("status") BreakdownStatus status,
+			@Param("modifiedAt") LocalDateTime modifiedAt);
+
+	@Modifying
+	@Query("update Breakdown m set m.completionNote =:completionNote, m.additionalNote =:additionalNote, m.solution =:solution, m.rootCause =:rootCause, m.modifiedAt=:modifiedAt where m.id =:id")
+	void addNotes(@Param("id") long id, @Param("completionNote") String completionNote,
+			@Param("additionalNote") String additionalNote, @Param("rootCause") String rootCause,
+			@Param("solution") String solution, @Param("modifiedAt") LocalDateTime modifiedAt);
+
+	List<Breakdown> findByProductIn(List<Product> products);
 }
