@@ -22,6 +22,8 @@ public interface MaintainanceService {
 	MaintainanceOutputDTO assignTechnician(TechnicianTaskAssignmentDTO technicianTaskAssignment);
 
 	List<BasicMaintainanceOutputDTO> findMyAssigns(String username);
+	
+	List<BasicMaintainanceOutputDTO> findMyOwnership(String username);
 
 	MaintainanceOutputDTO changeStatus(long id, MaintainanceStatus status);
 

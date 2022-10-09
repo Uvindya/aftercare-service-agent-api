@@ -61,6 +61,16 @@ public class MaintainanceController {
 		return ResponseEntity.ok(maintainanceService.changeStatus(id, MaintainanceStatus.NEEDS_CLIENTS_ACCEPTENCE));
 	}
 
+	@PutMapping("/{id}/approve")
+	public ResponseEntity<MaintainanceOutputDTO> approveMaintainance(@PathVariable long id) {
+		return ResponseEntity.ok(maintainanceService.changeStatus(id, MaintainanceStatus.CLIENT_ACKNOWLEDGED));
+	}
+
+	@PutMapping("/{id}/accept")
+	public ResponseEntity<MaintainanceOutputDTO> acceptMaintainance(@PathVariable long id) {
+		return ResponseEntity.ok(maintainanceService.changeStatus(id, MaintainanceStatus.COMPLETED));
+	}
+
 	@PutMapping("/{id}/notes")
 	public ResponseEntity<MaintainanceOutputDTO> addMaintainanceNotes(@PathVariable long id,
 			@Valid @RequestBody NotesInputDTO notesInput) {
@@ -71,6 +81,12 @@ public class MaintainanceController {
 	public ResponseEntity<List<BasicMaintainanceOutputDTO>> findMyAssigns() {
 		return ResponseEntity.ok(
 				maintainanceService.findMyAssigns(SecurityContextHolder.getContext().getAuthentication().getName()));
+	}
+
+	@GetMapping("/my-ownerships")
+	public ResponseEntity<List<BasicMaintainanceOutputDTO>> findMyOwnerships() {
+		return ResponseEntity.ok(
+				maintainanceService.findMyOwnership(SecurityContextHolder.getContext().getAuthentication().getName()));
 	}
 
 }

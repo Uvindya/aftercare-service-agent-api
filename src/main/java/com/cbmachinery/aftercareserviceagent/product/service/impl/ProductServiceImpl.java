@@ -118,4 +118,9 @@ public class ProductServiceImpl implements ProductService {
 		}
 	}
 
+	@Override
+	public List<Product> findByClient(Client client) {
+		return this.productRepository.findByClient(client);
+	}
+
 }

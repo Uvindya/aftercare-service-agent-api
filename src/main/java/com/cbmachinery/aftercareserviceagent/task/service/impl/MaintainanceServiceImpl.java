@@ -1,6 +1,7 @@
 package com.cbmachinery.aftercareserviceagent.task.service.impl;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,7 +24,9 @@ import com.cbmachinery.aftercareserviceagent.task.model.Maintainance;
 import com.cbmachinery.aftercareserviceagent.task.model.enums.MaintainanceStatus;
 import com.cbmachinery.aftercareserviceagent.task.repository.MaintainanceRepository;
 import com.cbmachinery.aftercareserviceagent.task.service.MaintainanceService;
+import com.cbmachinery.aftercareserviceagent.user.model.Client;
 import com.cbmachinery.aftercareserviceagent.user.model.Technician;
+import com.cbmachinery.aftercareserviceagent.user.service.ClientService;
 import com.cbmachinery.aftercareserviceagent.user.service.TechnicianService;
 
 @Service
@@ -32,13 +35,16 @@ public class MaintainanceServiceImpl implements MaintainanceService {
 	private final MaintainanceRepository maintainanceRepository;
 	private final ProductService productService;
 	private final TechnicianService technicianService;
+	private final ClientService clientService;
 
 	public MaintainanceServiceImpl(final MaintainanceRepository maintainanceRepository,
-			@Lazy ProductService productService, @Lazy TechnicianService technicianService) {
+			@Lazy ProductService productService, @Lazy TechnicianService technicianService,
+			@Lazy ClientService clientService) {
 		super();
 		this.maintainanceRepository = maintainanceRepository;
 		this.productService = productService;
 		this.technicianService = technicianService;
+		this.clientService = clientService;
 	}
 
 	@Override
@@ -79,7 +85,7 @@ public class MaintainanceServiceImpl implements MaintainanceService {
 	public MaintainanceOutputDTO assignTechnician(TechnicianTaskAssignmentDTO technicianTaskAssignment) {
 		Technician technician = this.technicianService.findByIdAsRaw(technicianTaskAssignment.getTechnicianId());
 		maintainanceRepository.assignTechnician(technicianTaskAssignment.getTaskId(), technician,
-				MaintainanceStatus.TECH_ASSIGNED);
+				MaintainanceStatus.TECH_ASSIGNED, LocalDateTime.now());
 		return findById(technicianTaskAssignment.getTaskId());
 	}
 
@@ -93,15 +99,25 @@ public class MaintainanceServiceImpl implements MaintainanceService {
 	@Override
 	@Transactional
 	public MaintainanceOutputDTO changeStatus(long id, MaintainanceStatus status) {
-		maintainanceRepository.changeStatus(id, status);
+		maintainanceRepository.changeStatus(id, status, LocalDateTime.now());
 		return findById(id);
 	}
 
 	@Override
 	@Transactional
 	public MaintainanceOutputDTO addNotes(long id, NotesInputDTO notesInput) {
-		maintainanceRepository.addNotes(id, notesInput.getCompletionNote(), notesInput.getAdditionalNote());
+		maintainanceRepository.addNotes(id, notesInput.getCompletionNote(), notesInput.getAdditionalNote(),
+				LocalDateTime.now());
 		return findById(id);
+	}
+
+	@Override
+	public List<BasicMaintainanceOutputDTO> findMyOwnership(String username) {
+		Client client = clientService.findByUsername(username);
+		List<Product> products = productService.findByClient(client);
+		return this.maintainanceRepository.findByProductIn(products).stream()
+				.sorted(Comparator.comparing(Maintainance::getModifiedAt)).map(Maintainance::viewAsBasicDTO)
+				.collect(Collectors.toList());
 	}
 
 }
