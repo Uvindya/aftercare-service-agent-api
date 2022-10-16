@@ -7,6 +7,8 @@ import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
@@ -80,6 +82,12 @@ public class ProductServiceImpl implements ProductService {
 		}
 		return productRepository.findByParams(searchTerm, searchTerm, searchTerm, searchTerm, pageable)
 				.map(Product::viewAsBasicDTO);
+	}
+
+	@Override
+	public List<BasicProductOutputDTO> findAll() {
+		return StreamSupport.stream(productRepository.findAll().spliterator(), false).map(Product::viewAsBasicDTO)
+				.collect(Collectors.toList());
 	}
 
 	@Override

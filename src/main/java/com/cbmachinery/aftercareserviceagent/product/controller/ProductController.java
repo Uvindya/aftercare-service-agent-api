@@ -1,5 +1,7 @@
 package com.cbmachinery.aftercareserviceagent.product.controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.data.domain.Page;
@@ -40,6 +42,11 @@ public class ProductController {
 	public ResponseEntity<Page<BasicProductOutputDTO>> findAll(Pageable pageable,
 			@RequestParam(required = false) String searchTerm) {
 		return ResponseEntity.ok(productService.findAll(pageable, searchTerm));
+	}
+
+	@GetMapping("/all")
+	public ResponseEntity<List<BasicProductOutputDTO>> findAll() {
+		return ResponseEntity.ok(productService.findAll());
 	}
 
 	@GetMapping("/{id}")

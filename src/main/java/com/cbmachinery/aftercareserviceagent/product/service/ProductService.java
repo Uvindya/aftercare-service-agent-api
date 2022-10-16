@@ -22,6 +22,8 @@ public interface ProductService {
 	BasicProductOutputDTO save(ProductInputDTO productInput);
 
 	Page<BasicProductOutputDTO> findAll(Pageable pageable, String searchTerm);
+	
+	List<BasicProductOutputDTO> findAll();
 
 	void importFromCSV(MultipartFile csv);
 	
