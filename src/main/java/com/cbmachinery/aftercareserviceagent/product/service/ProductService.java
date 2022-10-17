@@ -22,10 +22,12 @@ public interface ProductService {
 	BasicProductOutputDTO save(ProductInputDTO productInput);
 
 	Page<BasicProductOutputDTO> findAll(Pageable pageable, String searchTerm);
-	
+
 	List<BasicProductOutputDTO> findAll();
 
+	List<BasicProductOutputDTO> findMyProducts(String username);
+
 	void importFromCSV(MultipartFile csv);
-	
+
 	List<Product> findByClient(Client client);
 }

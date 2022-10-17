@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -58,6 +59,12 @@ public class ProductController {
 	public ResponseEntity<BasicProductOutputDTO> importFromCSV(@RequestParam("file") MultipartFile file) {
 		productService.importFromCSV(file);
 		return new ResponseEntity<>(null, HttpStatus.CREATED);
+	}
+
+	@GetMapping("/my")
+	public ResponseEntity<List<BasicProductOutputDTO>> findMyProducts() {
+		return ResponseEntity
+				.ok(productService.findMyProducts(SecurityContextHolder.getContext().getAuthentication().getName()));
 	}
 
 }

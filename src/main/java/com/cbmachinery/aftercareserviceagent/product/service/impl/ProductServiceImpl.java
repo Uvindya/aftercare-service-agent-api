@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.Year;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -129,6 +130,13 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public List<Product> findByClient(Client client) {
 		return this.productRepository.findByClient(client);
+	}
+
+	@Override
+	public List<BasicProductOutputDTO> findMyProducts(String username) {
+		return this.productRepository.findAll().stream().filter(p -> p.getClient().getEmail().equals(username))
+				.sorted(Comparator.comparing(Product::getModifiedAt)).map(Product::viewAsBasicDTO)
+				.collect(Collectors.toList());
 	}
 
 }
