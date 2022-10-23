@@ -1,5 +1,6 @@
 package com.cbmachinery.aftercareserviceagent.task.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -10,6 +11,7 @@ import com.cbmachinery.aftercareserviceagent.task.dto.BreakdownInputDTO;
 import com.cbmachinery.aftercareserviceagent.task.dto.BreakdownNotesInputDTO;
 import com.cbmachinery.aftercareserviceagent.task.dto.BreakdownOutputDTO;
 import com.cbmachinery.aftercareserviceagent.task.dto.TechnicianTaskAssignmentDTO;
+import com.cbmachinery.aftercareserviceagent.task.model.Breakdown;
 import com.cbmachinery.aftercareserviceagent.task.model.enums.BreakdownStatus;
 
 public interface BreakdownService {
@@ -28,4 +30,6 @@ public interface BreakdownService {
 	BreakdownOutputDTO changeStatus(long id, BreakdownStatus status);
 
 	BreakdownOutputDTO addNotes(long id, BreakdownNotesInputDTO notesInput);
+
+	List<Breakdown> findByReportedAt(LocalDate from, LocalDate to);
 }

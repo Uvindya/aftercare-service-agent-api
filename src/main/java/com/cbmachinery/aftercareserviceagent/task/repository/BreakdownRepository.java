@@ -1,5 +1,6 @@
 package com.cbmachinery.aftercareserviceagent.task.repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -32,4 +33,6 @@ public interface BreakdownRepository extends JpaRepository<Breakdown, Long> {
 			@Param("solution") String solution, @Param("modifiedAt") LocalDateTime modifiedAt);
 
 	List<Breakdown> findByProductIn(List<Product> products);
+
+	List<Breakdown> findByReportedAtBetween(LocalDate from, LocalDate to);
 }

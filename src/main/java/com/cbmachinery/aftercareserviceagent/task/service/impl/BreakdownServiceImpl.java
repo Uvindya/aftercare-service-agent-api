@@ -119,4 +119,9 @@ public class BreakdownServiceImpl implements BreakdownService {
 				.sorted(Comparator.comparing(Breakdown::getModifiedAt)).map(Breakdown::viewAsBasicDTO)
 				.collect(Collectors.toList());
 	}
+
+	@Override
+	public List<Breakdown> findByReportedAt(LocalDate from, LocalDate to) {
+		return this.breakdownRepository.findByReportedAtBetween(from, to);
+	}
 }
