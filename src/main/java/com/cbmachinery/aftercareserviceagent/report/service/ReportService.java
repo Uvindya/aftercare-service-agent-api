@@ -4,9 +4,12 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.cbmachinery.aftercareserviceagent.report.dto.BreakdownKeys;
+import com.cbmachinery.aftercareserviceagent.report.dto.ReporKeysOutputDTO;
 
 public interface ReportService {
 
 	public byte[] breakdownReport(List<BreakdownKeys> keys, LocalDate from, LocalDate to);
+
+	public ReporKeysOutputDTO getReportKeys();
 
 }

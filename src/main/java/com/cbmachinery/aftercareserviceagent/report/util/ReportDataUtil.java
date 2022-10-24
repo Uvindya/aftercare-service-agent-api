@@ -25,7 +25,7 @@ public class ReportDataUtil {
 			Map.entry(BreakdownKeys.CLIENT_ID, "Client ID"), Map.entry(BreakdownKeys.CLIENT_NAME, "Client Name"),
 			Map.entry(BreakdownKeys.CLIENT_EMAIL, "Client Email"),
 			Map.entry(BreakdownKeys.PRIORITY_LEVEL, "Priority Level"), Map.entry(BreakdownKeys.STATUS, "Status"),
-			Map.entry(BreakdownKeys.TECH_ID, "Technician ID"), Map.entry(BreakdownKeys.TECH_NAME, "Technician Name"),
+			Map.entry(BreakdownKeys.TECHNICIAN_ID, "Technician ID"), Map.entry(BreakdownKeys.TECHNICIAN_NAME, "Technician Name"),
 			Map.entry(BreakdownKeys.ROOT_CAUSE, "Root Cause"), Map.entry(BreakdownKeys.SOLUTION, "Solution"));
 
 	public static List<String> mapBreakdownKeysToHeaders(List<BreakdownKeys> keys) {
@@ -47,8 +47,8 @@ public class ReportDataUtil {
 				Map.entry(BreakdownKeys.CLIENT_EMAIL, c.getEmail()),
 				Map.entry(BreakdownKeys.PRIORITY_LEVEL, breakdown.getPriorityLevel().name()),
 				Map.entry(BreakdownKeys.STATUS, breakdown.getStatus().name()),
-				Map.entry(BreakdownKeys.TECH_ID, Objects.nonNull(t) ? t.getErpId() : ""),
-				Map.entry(BreakdownKeys.TECH_NAME, Objects.nonNull(t) ? t.getFirstName() + " " + t.getLastName() : ""),
+				Map.entry(BreakdownKeys.TECHNICIAN_ID, Objects.nonNull(t) ? t.getErpId() : ""),
+				Map.entry(BreakdownKeys.TECHNICIAN_NAME, Objects.nonNull(t) ? t.getFirstName() + " " + t.getLastName() : ""),
 				Map.entry(BreakdownKeys.ROOT_CAUSE, escapeSpecialCharacters(breakdown.getRootCause())),
 				Map.entry(BreakdownKeys.SOLUTION, escapeSpecialCharacters(breakdown.getRootCause())));
 	}

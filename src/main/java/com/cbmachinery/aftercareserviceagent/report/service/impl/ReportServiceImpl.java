@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -14,6 +15,7 @@ import org.apache.commons.csv.CSVPrinter;
 import org.springframework.stereotype.Service;
 
 import com.cbmachinery.aftercareserviceagent.report.dto.BreakdownKeys;
+import com.cbmachinery.aftercareserviceagent.report.dto.ReporKeysOutputDTO;
 import com.cbmachinery.aftercareserviceagent.report.service.ReportService;
 import com.cbmachinery.aftercareserviceagent.report.util.ReportDataUtil;
 import com.cbmachinery.aftercareserviceagent.task.model.Breakdown;
@@ -59,6 +61,11 @@ public class ReportServiceImpl implements ReportService {
 		} catch (IOException e) {
 			throw new IllegalArgumentException("");
 		}
+	}
+
+	@Override
+	public ReporKeysOutputDTO getReportKeys() {
+		return new ReporKeysOutputDTO(Arrays.asList(BreakdownKeys.values()));
 	}
 
 }
