@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cbmachinery.aftercareserviceagent.report.dto.BreakdownKeys;
+import com.cbmachinery.aftercareserviceagent.report.dto.MaintainanceKeys;
 import com.cbmachinery.aftercareserviceagent.report.dto.ReporKeysOutputDTO;
 import com.cbmachinery.aftercareserviceagent.report.service.ReportService;
 
@@ -34,6 +35,17 @@ public class ReportController {
 	public ResponseEntity<byte[]> breakdownReport(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
 			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to, @RequestBody List<BreakdownKeys> keys) {
 		byte[] fileContent = reportService.breakdownReport(keys, from, to);
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+		headers.setContentLength(fileContent.length);
+		headers.setContentDispositionFormData("attachment", "test.csv");
+		return new ResponseEntity<>(fileContent, headers, HttpStatus.CREATED);
+	}
+	
+	@PostMapping("/maintainance")
+	public ResponseEntity<byte[]> maintainanceReport(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to, @RequestBody List<MaintainanceKeys> keys) {
+		byte[] fileContent = reportService.maintainanceReport(keys, from, to);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 		headers.setContentLength(fileContent.length);

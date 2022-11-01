@@ -120,4 +120,9 @@ public class MaintainanceServiceImpl implements MaintainanceService {
 				.collect(Collectors.toList());
 	}
 
+	@Override
+	public List<Maintainance> findByReportedAt(LocalDate from, LocalDate to) {
+		return this.maintainanceRepository.findByReportedAtBetween(from, to);
+	}
+
 }

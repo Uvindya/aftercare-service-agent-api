@@ -1,0 +1,6 @@
+package com.cbmachinery.aftercareserviceagent.report.dto;
+
+public enum MaintainanceKeys {
+	ID, PRODUCT_ID, PRODUCT_NAME, CLIENT_ID, CLIENT_NAME, CLIENT_EMAIL, TECHNICIAN_ID, TECHNICIAN_NAME,
+	MAINTAINANCE_TYPE, STATUS, DESCRIPTION, REPORTED_DATE, SCHEDULE_DATE
+}

@@ -11,11 +11,14 @@ import lombok.Getter;
 public class ReporKeysOutputDTO {
 
 	private final List<BreakdownKeys> breakdownKeys;
+	private final List<MaintainanceKeys> maintainanceKeys;
 
 	@JsonCreator
-	public ReporKeysOutputDTO(@JsonProperty("breakdownKeys") final List<BreakdownKeys> breakdownKeys) {
+	public ReporKeysOutputDTO(@JsonProperty("breakdownKeys") final List<BreakdownKeys> breakdownKeys,
+			@JsonProperty("maintainanceKeys") final List<MaintainanceKeys> maintainanceKeys) {
 		super();
 		this.breakdownKeys = breakdownKeys;
+		this.maintainanceKeys = maintainanceKeys;
 	}
 
 }

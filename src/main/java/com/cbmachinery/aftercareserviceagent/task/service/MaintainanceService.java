@@ -1,5 +1,6 @@
 package com.cbmachinery.aftercareserviceagent.task.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -10,6 +11,7 @@ import com.cbmachinery.aftercareserviceagent.task.dto.MaintainanceInputDTO;
 import com.cbmachinery.aftercareserviceagent.task.dto.MaintainanceOutputDTO;
 import com.cbmachinery.aftercareserviceagent.task.dto.NotesInputDTO;
 import com.cbmachinery.aftercareserviceagent.task.dto.TechnicianTaskAssignmentDTO;
+import com.cbmachinery.aftercareserviceagent.task.model.Maintainance;
 import com.cbmachinery.aftercareserviceagent.task.model.enums.MaintainanceStatus;
 
 public interface MaintainanceService {
@@ -28,4 +30,6 @@ public interface MaintainanceService {
 	MaintainanceOutputDTO changeStatus(long id, MaintainanceStatus status);
 
 	MaintainanceOutputDTO addNotes(long id, NotesInputDTO notesInput);
+
+	List<Maintainance> findByReportedAt(LocalDate from, LocalDate to);
 }

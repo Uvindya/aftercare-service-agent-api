@@ -1,5 +1,6 @@
 package com.cbmachinery.aftercareserviceagent.task.repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -31,4 +32,6 @@ public interface MaintainanceRepository extends JpaRepository<Maintainance, Long
 			@Param("additionalNote") String additionalNote, @Param("modifiedAt") LocalDateTime modifiedAt);
 
 	List<Maintainance> findByProductIn(List<Product> products);
+
+	List<Maintainance> findByReportedAtBetween(LocalDate from, LocalDate to);
 }
