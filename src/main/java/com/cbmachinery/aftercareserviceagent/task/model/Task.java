@@ -1,6 +1,7 @@
 package com.cbmachinery.aftercareserviceagent.task.model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Set;
 
@@ -49,6 +50,9 @@ public abstract class Task extends Auditable<String> {
 	private String description;
 
 	private LocalDate reportedAt;
+	private LocalDateTime assignedAt;
+	private LocalDateTime startedAt;
+	private LocalDateTime completedAt;
 	private LocalDate scheduledDate;
 	private LocalDate targetCompletionDate;
 

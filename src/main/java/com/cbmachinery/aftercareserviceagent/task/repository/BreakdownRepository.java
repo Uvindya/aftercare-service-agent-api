@@ -17,9 +17,19 @@ import com.cbmachinery.aftercareserviceagent.user.model.Technician;
 public interface BreakdownRepository extends JpaRepository<Breakdown, Long> {
 
 	@Modifying
-	@Query("update Breakdown m set m.technician =:technician, m.status =:status, m.modifiedAt=:modifiedAt where m.id =:id")
+	@Query("update Breakdown m set m.technician =:technician, m.status =:status, m.modifiedAt=:modifiedAt, m.assignedAt=:modifiedAt where m.id =:id")
 	void assignTechnician(@Param("id") long id, @Param("technician") Technician technician,
 			@Param("status") BreakdownStatus status, @Param("modifiedAt") LocalDateTime modifiedAt);
+
+	@Modifying
+	@Query("update Breakdown m set m.status =:status, m.modifiedAt=:modifiedAt, m.startedAt=:modifiedAt where m.id =:id")
+	void start(@Param("id") long id, @Param("status") BreakdownStatus status,
+			@Param("modifiedAt") LocalDateTime modifiedAt);
+
+	@Modifying
+	@Query("update Breakdown m set m.status =:status, m.modifiedAt=:modifiedAt, m.completedAt=:modifiedAt where m.id =:id")
+	void complete(@Param("id") long id, @Param("status") BreakdownStatus status,
+			@Param("modifiedAt") LocalDateTime modifiedAt);
 
 	@Modifying
 	@Query("update Breakdown m set m.status =:status, m.modifiedAt=:modifiedAt where m.id =:id")
@@ -35,4 +45,10 @@ public interface BreakdownRepository extends JpaRepository<Breakdown, Long> {
 	List<Breakdown> findByProductIn(List<Product> products);
 
 	List<Breakdown> findByReportedAtBetween(LocalDate from, LocalDate to);
+
+	List<Breakdown> findByAssignedAtBetween(LocalDateTime from, LocalDateTime to);
+
+	@Query(value = "SELECT * FROM breakdowns WHERE technician_id=:technicianId AND (assigned_at >=:from OR assigned_at <=:to)", nativeQuery = true)
+	List<Breakdown> findByAssignedAtBetweenForTechnician(@Param("from") LocalDateTime from,
+			@Param("to") LocalDateTime to, @Param("technicianId") long technicianId);
 }

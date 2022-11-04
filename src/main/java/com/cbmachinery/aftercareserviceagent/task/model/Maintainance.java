@@ -1,5 +1,7 @@
 package com.cbmachinery.aftercareserviceagent.task.model;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -32,6 +34,8 @@ public class Maintainance extends Task {
 
 	@Enumerated(EnumType.STRING)
 	private MaintainanceStatus status;
+	
+	private LocalDateTime approvedAt;
 
 	@JsonIgnore
 	public BasicMaintainanceOutputDTO viewAsBasicDTO() {

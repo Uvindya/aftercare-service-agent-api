@@ -1,6 +1,7 @@
 package com.cbmachinery.aftercareserviceagent.task.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -24,12 +25,24 @@ public interface MaintainanceService {
 	MaintainanceOutputDTO assignTechnician(TechnicianTaskAssignmentDTO technicianTaskAssignment);
 
 	List<BasicMaintainanceOutputDTO> findMyAssigns(String username);
-	
+
 	List<BasicMaintainanceOutputDTO> findMyOwnership(String username);
+
+	MaintainanceOutputDTO start(long id, MaintainanceStatus status);
+
+	MaintainanceOutputDTO complete(long id, MaintainanceStatus status);
+
+	MaintainanceOutputDTO approve(long id, MaintainanceStatus status);
 
 	MaintainanceOutputDTO changeStatus(long id, MaintainanceStatus status);
 
 	MaintainanceOutputDTO addNotes(long id, NotesInputDTO notesInput);
 
 	List<Maintainance> findByReportedAt(LocalDate from, LocalDate to);
+
+	List<Maintainance> findUpcomming(LocalDate from, LocalDate to);
+
+	List<Maintainance> findByAssignedAt(LocalDateTime from, LocalDateTime to);
+
+	List<Maintainance> findByAssignedAtForTechnician(LocalDateTime from, LocalDateTime to, long technicianId);
 }

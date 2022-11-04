@@ -53,17 +53,17 @@ public class MaintainanceController {
 
 	@PutMapping("/{id}/start")
 	public ResponseEntity<MaintainanceOutputDTO> startMaintainance(@PathVariable long id) {
-		return ResponseEntity.ok(maintainanceService.changeStatus(id, MaintainanceStatus.IN_PROGRESS));
+		return ResponseEntity.ok(maintainanceService.start(id, MaintainanceStatus.IN_PROGRESS));
 	}
 
 	@PutMapping("/{id}/complete")
 	public ResponseEntity<MaintainanceOutputDTO> completeMaintainance(@PathVariable long id) {
-		return ResponseEntity.ok(maintainanceService.changeStatus(id, MaintainanceStatus.NEEDS_CLIENTS_ACCEPTENCE));
+		return ResponseEntity.ok(maintainanceService.complete(id, MaintainanceStatus.NEEDS_CLIENTS_ACCEPTENCE));
 	}
 
 	@PutMapping("/{id}/approve")
 	public ResponseEntity<MaintainanceOutputDTO> approveMaintainance(@PathVariable long id) {
-		return ResponseEntity.ok(maintainanceService.changeStatus(id, MaintainanceStatus.CLIENT_ACKNOWLEDGED));
+		return ResponseEntity.ok(maintainanceService.approve(id, MaintainanceStatus.CLIENT_ACKNOWLEDGED));
 	}
 
 	@PutMapping("/{id}/accept")

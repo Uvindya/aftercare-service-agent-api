@@ -98,6 +98,27 @@ public class MaintainanceServiceImpl implements MaintainanceService {
 
 	@Override
 	@Transactional
+	public MaintainanceOutputDTO approve(long id, MaintainanceStatus status) {
+		maintainanceRepository.approve(id, status, LocalDateTime.now());
+		return findById(id);
+	}
+
+	@Override
+	@Transactional
+	public MaintainanceOutputDTO start(long id, MaintainanceStatus status) {
+		maintainanceRepository.start(id, status, LocalDateTime.now());
+		return findById(id);
+	}
+
+	@Override
+	@Transactional
+	public MaintainanceOutputDTO complete(long id, MaintainanceStatus status) {
+		maintainanceRepository.complete(id, status, LocalDateTime.now());
+		return findById(id);
+	}
+
+	@Override
+	@Transactional
 	public MaintainanceOutputDTO changeStatus(long id, MaintainanceStatus status) {
 		maintainanceRepository.changeStatus(id, status, LocalDateTime.now());
 		return findById(id);
@@ -123,6 +144,23 @@ public class MaintainanceServiceImpl implements MaintainanceService {
 	@Override
 	public List<Maintainance> findByReportedAt(LocalDate from, LocalDate to) {
 		return this.maintainanceRepository.findByReportedAtBetween(from, to);
+	}
+
+	@Override
+	public List<Maintainance> findByAssignedAt(LocalDateTime from, LocalDateTime to) {
+		return this.maintainanceRepository.findByAssignedAtBetween(from, to);
+	}
+
+	@Override
+	public List<Maintainance> findUpcomming(LocalDate from, LocalDate to) {
+		return this.maintainanceRepository.findByScheduledDateBetweenAndStatusNotIn(from, to,
+				List.of(MaintainanceStatus.IN_PROGRESS, MaintainanceStatus.NEEDS_CLIENTS_ACCEPTENCE,
+						MaintainanceStatus.COMPLETED));
+	}
+
+	@Override
+	public List<Maintainance> findByAssignedAtForTechnician(LocalDateTime from, LocalDateTime to, long technicianId) {
+		return this.maintainanceRepository.findByAssignedAtBetweenForTechnician(from, to, technicianId);
 	}
 
 }

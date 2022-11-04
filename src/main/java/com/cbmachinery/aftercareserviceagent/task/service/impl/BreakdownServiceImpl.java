@@ -105,6 +105,20 @@ public class BreakdownServiceImpl implements BreakdownService {
 
 	@Override
 	@Transactional
+	public BreakdownOutputDTO start(long id, BreakdownStatus status) {
+		breakdownRepository.start(id, status, LocalDateTime.now());
+		return findById(id);
+	}
+
+	@Override
+	@Transactional
+	public BreakdownOutputDTO complete(long id, BreakdownStatus status) {
+		breakdownRepository.complete(id, status, LocalDateTime.now());
+		return findById(id);
+	}
+
+	@Override
+	@Transactional
 	public BreakdownOutputDTO addNotes(long id, BreakdownNotesInputDTO notesInput) {
 		breakdownRepository.addNotes(id, notesInput.getCompletionNote(), notesInput.getAdditionalNote(),
 				notesInput.getRootCause(), notesInput.getSolution(), LocalDateTime.now());
@@ -123,5 +137,15 @@ public class BreakdownServiceImpl implements BreakdownService {
 	@Override
 	public List<Breakdown> findByReportedAt(LocalDate from, LocalDate to) {
 		return this.breakdownRepository.findByReportedAtBetween(from, to);
+	}
+
+	@Override
+	public List<Breakdown> findByAssignedAt(LocalDateTime from, LocalDateTime to) {
+		return this.breakdownRepository.findByAssignedAtBetween(from, to);
+	}
+
+	@Override
+	public List<Breakdown> findByAssignedAtForTechnician(LocalDateTime from, LocalDateTime to, long technicianId) {
+		return this.breakdownRepository.findByAssignedAtBetweenForTechnician(from, to, technicianId);
 	}
 }

@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import com.cbmachinery.aftercareserviceagent.product.model.Product;
 import com.cbmachinery.aftercareserviceagent.report.dto.BreakdownKeys;
 import com.cbmachinery.aftercareserviceagent.report.dto.MaintainanceKeys;
+import com.cbmachinery.aftercareserviceagent.report.dto.WorksheetKeys;
 import com.cbmachinery.aftercareserviceagent.task.model.Breakdown;
 import com.cbmachinery.aftercareserviceagent.task.model.Maintainance;
 import com.cbmachinery.aftercareserviceagent.user.model.Client;
@@ -23,8 +24,7 @@ public class ReportDataUtil {
 	public static final Map<BreakdownKeys, String> BREAKDOWN_HEADERS = Map.ofEntries(Map.entry(BreakdownKeys.ID, "ID"),
 			Map.entry(BreakdownKeys.DESCRIPTION, "Description"),
 			Map.entry(BreakdownKeys.BREAKDOWN_TYPE, "Breakdown Type"),
-			Map.entry(BreakdownKeys.RISK_LEVEL, "Risk Level"),
-			Map.entry(BreakdownKeys.REPORTED_DATE, "Reported Date & Time"),
+			Map.entry(BreakdownKeys.RISK_LEVEL, "Risk Level"), Map.entry(BreakdownKeys.REPORTED_DATE, "Reported Date"),
 			Map.entry(BreakdownKeys.PRODUCT_ID, "Product ID"), Map.entry(BreakdownKeys.PRODUCT_NAME, "Product Name"),
 			Map.entry(BreakdownKeys.CLIENT_ID, "Client ID"), Map.entry(BreakdownKeys.CLIENT_NAME, "Client Name"),
 			Map.entry(BreakdownKeys.CLIENT_EMAIL, "Client Email"),
@@ -36,7 +36,7 @@ public class ReportDataUtil {
 	public static final Map<MaintainanceKeys, String> MAINTAINANCE_HEADERS = Map.ofEntries(
 			Map.entry(MaintainanceKeys.ID, "ID"), Map.entry(MaintainanceKeys.DESCRIPTION, "Description"),
 			Map.entry(MaintainanceKeys.MAINTAINANCE_TYPE, "Maintainance Type"),
-			Map.entry(MaintainanceKeys.REPORTED_DATE, "Reported Date & Time"),
+			Map.entry(MaintainanceKeys.REPORTED_DATE, "Reported Date"),
 			Map.entry(MaintainanceKeys.PRODUCT_ID, "Product ID"),
 			Map.entry(MaintainanceKeys.PRODUCT_NAME, "Product Name"),
 			Map.entry(MaintainanceKeys.CLIENT_ID, "Client ID"), Map.entry(MaintainanceKeys.CLIENT_NAME, "Client Name"),
@@ -45,12 +45,28 @@ public class ReportDataUtil {
 			Map.entry(MaintainanceKeys.TECHNICIAN_NAME, "Technician Name"),
 			Map.entry(MaintainanceKeys.SCHEDULE_DATE, "Schedule Date"));
 
+	public static final Map<WorksheetKeys, String> WORKSHEET_HEADERS = Map.ofEntries(Map.entry(WorksheetKeys.ID, "ID"),
+			Map.entry(WorksheetKeys.DESCRIPTION, "Description"),
+			Map.entry(WorksheetKeys.TECHNICIAN_ID, "Technician ID"),
+			Map.entry(WorksheetKeys.TECHNICIAN_NAME, "Technician Name"),
+			Map.entry(WorksheetKeys.REPORTED_DATE, "Reported Date"),
+			Map.entry(WorksheetKeys.ASSIGNED_DATE, "Assigned Date"),
+			Map.entry(WorksheetKeys.STARTED_DATE, "Started Date"),
+			Map.entry(WorksheetKeys.COMPLETED_DATE, "Completed Date"), Map.entry(WorksheetKeys.TASK_STATUS, "Status"),
+			Map.entry(WorksheetKeys.TASK_TYPE, "Type"), Map.entry(WorksheetKeys.PRODUCT_ID, "Product ID"),
+			Map.entry(WorksheetKeys.PRODUCT_NAME, "Product Name"), Map.entry(WorksheetKeys.CLIENT_ID, "Client ID"),
+			Map.entry(WorksheetKeys.CLIENT_NAME, "Client Name"));
+
 	public static List<String> mapBreakdownKeysToHeaders(List<BreakdownKeys> keys) {
 		return keys.stream().map(BREAKDOWN_HEADERS::get).collect(Collectors.toList());
 	}
 
 	public static List<String> mapMaintainanceKeysToHeaders(List<MaintainanceKeys> keys) {
 		return keys.stream().map(MAINTAINANCE_HEADERS::get).collect(Collectors.toList());
+	}
+
+	public static List<String> mapWorksheetKeysToHeaders(List<WorksheetKeys> keys) {
+		return keys.stream().map(WORKSHEET_HEADERS::get).collect(Collectors.toList());
 	}
 
 	public static Map<BreakdownKeys, String> mapBreakdown(Breakdown breakdown) {
@@ -94,6 +110,52 @@ public class ReportDataUtil {
 				Map.entry(MaintainanceKeys.STATUS, maintainance.getStatus().name()),
 				Map.entry(MaintainanceKeys.TECHNICIAN_ID, Objects.nonNull(t) ? t.getErpId() : ""),
 				Map.entry(MaintainanceKeys.TECHNICIAN_NAME,
+						Objects.nonNull(t) ? t.getFirstName() + " " + t.getLastName() : ""));
+	}
+
+	public static Map<WorksheetKeys, String> mapBreakdownAsWorksheet(Breakdown breakdown) {
+		Product p = breakdown.getProduct();
+		Client c = p.getClient();
+		Technician t = breakdown.getTechnician();
+		return Map.ofEntries(Map.entry(WorksheetKeys.ID, String.valueOf(breakdown.getId())),
+				Map.entry(WorksheetKeys.DESCRIPTION, escapeSpecialCharacters(breakdown.getDescription())),
+				Map.entry(WorksheetKeys.TASK_TYPE, "Breakdown"),
+				Map.entry(WorksheetKeys.ASSIGNED_DATE,
+						Optional.ofNullable(breakdown.getAssignedAt()).map(d -> d.format(DT_FORMATTER)).orElse("")),
+				Map.entry(WorksheetKeys.STARTED_DATE,
+						Optional.ofNullable(breakdown.getStartedAt()).map(d -> d.format(DT_FORMATTER)).orElse("")),
+				Map.entry(WorksheetKeys.COMPLETED_DATE,
+						Optional.ofNullable(breakdown.getCompletedAt()).map(d -> d.format(DT_FORMATTER)).orElse("")),
+				Map.entry(WorksheetKeys.REPORTED_DATE, breakdown.getCreatedAt().format(DT_FORMATTER)),
+				Map.entry(WorksheetKeys.PRODUCT_ID, p.getErpId()), Map.entry(WorksheetKeys.PRODUCT_NAME, p.getName()),
+				Map.entry(WorksheetKeys.CLIENT_ID, c.getErpId()),
+				Map.entry(WorksheetKeys.TASK_STATUS, breakdown.getStatus().name()),
+				Map.entry(WorksheetKeys.CLIENT_NAME, c.getFirstName() + " " + c.getLastName()),
+				Map.entry(WorksheetKeys.TECHNICIAN_ID, Objects.nonNull(t) ? t.getErpId() : ""),
+				Map.entry(WorksheetKeys.TECHNICIAN_NAME,
+						Objects.nonNull(t) ? t.getFirstName() + " " + t.getLastName() : ""));
+	}
+
+	public static Map<WorksheetKeys, String> mapMaintainanceAsWorksheet(Maintainance maintainance) {
+		Product p = maintainance.getProduct();
+		Client c = p.getClient();
+		Technician t = maintainance.getTechnician();
+		return Map.ofEntries(Map.entry(WorksheetKeys.ID, String.valueOf(maintainance.getId())),
+				Map.entry(WorksheetKeys.DESCRIPTION, escapeSpecialCharacters(maintainance.getDescription())),
+				Map.entry(WorksheetKeys.TASK_TYPE, "Maintainance"),
+				Map.entry(WorksheetKeys.ASSIGNED_DATE,
+						Optional.ofNullable(maintainance.getAssignedAt()).map(d -> d.format(DT_FORMATTER)).orElse("")),
+				Map.entry(WorksheetKeys.STARTED_DATE,
+						Optional.ofNullable(maintainance.getStartedAt()).map(d -> d.format(DT_FORMATTER)).orElse("")),
+				Map.entry(WorksheetKeys.COMPLETED_DATE,
+						Optional.ofNullable(maintainance.getCompletedAt()).map(d -> d.format(DT_FORMATTER)).orElse("")),
+				Map.entry(WorksheetKeys.REPORTED_DATE, maintainance.getCreatedAt().format(DT_FORMATTER)),
+				Map.entry(WorksheetKeys.PRODUCT_ID, p.getErpId()), Map.entry(WorksheetKeys.PRODUCT_NAME, p.getName()),
+				Map.entry(WorksheetKeys.CLIENT_ID, c.getErpId()),
+				Map.entry(WorksheetKeys.TASK_STATUS, maintainance.getStatus().name()),
+				Map.entry(WorksheetKeys.CLIENT_NAME, c.getFirstName() + " " + c.getLastName()),
+				Map.entry(WorksheetKeys.TECHNICIAN_ID, Objects.nonNull(t) ? t.getErpId() : ""),
+				Map.entry(WorksheetKeys.TECHNICIAN_NAME,
 						Objects.nonNull(t) ? t.getFirstName() + " " + t.getLastName() : ""));
 	}
 

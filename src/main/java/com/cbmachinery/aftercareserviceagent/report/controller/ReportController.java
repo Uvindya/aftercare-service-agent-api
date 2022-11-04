@@ -1,6 +1,7 @@
 package com.cbmachinery.aftercareserviceagent.report.controller;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.format.annotation.DateTimeFormat;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.cbmachinery.aftercareserviceagent.report.dto.BreakdownKeys;
 import com.cbmachinery.aftercareserviceagent.report.dto.MaintainanceKeys;
 import com.cbmachinery.aftercareserviceagent.report.dto.ReporKeysOutputDTO;
+import com.cbmachinery.aftercareserviceagent.report.dto.WorksheetKeys;
 import com.cbmachinery.aftercareserviceagent.report.service.ReportService;
 
 @RestController
@@ -41,11 +43,40 @@ public class ReportController {
 		headers.setContentDispositionFormData("attachment", "test.csv");
 		return new ResponseEntity<>(fileContent, headers, HttpStatus.CREATED);
 	}
-	
+
 	@PostMapping("/maintainance")
-	public ResponseEntity<byte[]> maintainanceReport(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
-			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to, @RequestBody List<MaintainanceKeys> keys) {
+	public ResponseEntity<byte[]> maintainanceReport(
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to,
+			@RequestBody List<MaintainanceKeys> keys) {
 		byte[] fileContent = reportService.maintainanceReport(keys, from, to);
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+		headers.setContentLength(fileContent.length);
+		headers.setContentDispositionFormData("attachment", "test.csv");
+		return new ResponseEntity<>(fileContent, headers, HttpStatus.CREATED);
+	}
+
+	@PostMapping("/maintainance/upcomming")
+	public ResponseEntity<byte[]> upcommingMaintainanceReport(
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to,
+			@RequestBody List<MaintainanceKeys> keys) {
+		byte[] fileContent = reportService.upcommingMaintainanceReport(keys, from, to);
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+		headers.setContentLength(fileContent.length);
+		headers.setContentDispositionFormData("attachment", "test.csv");
+		return new ResponseEntity<>(fileContent, headers, HttpStatus.CREATED);
+	}
+
+	@PostMapping("/worksheet")
+	public ResponseEntity<byte[]> worksheetReport(@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to,
+			@RequestParam(required = false, defaultValue = "0") long technicianId,
+			@RequestBody List<WorksheetKeys> keys) {
+		byte[] fileContent = reportService.worksheetReport(keys, from.atStartOfDay(), to.atTime(LocalTime.MAX),
+				technicianId);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 		headers.setContentLength(fileContent.length);

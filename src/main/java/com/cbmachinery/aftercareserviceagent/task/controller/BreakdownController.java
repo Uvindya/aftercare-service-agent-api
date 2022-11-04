@@ -60,12 +60,12 @@ public class BreakdownController {
 
 	@PutMapping("/{id}/start")
 	public ResponseEntity<BreakdownOutputDTO> startMaintainance(@PathVariable long id) {
-		return ResponseEntity.ok(breakdownService.changeStatus(id, BreakdownStatus.IN_PROGRESS));
+		return ResponseEntity.ok(breakdownService.start(id, BreakdownStatus.IN_PROGRESS));
 	}
 
 	@PutMapping("/{id}/complete")
 	public ResponseEntity<BreakdownOutputDTO> completeMaintainance(@PathVariable long id) {
-		return ResponseEntity.ok(breakdownService.changeStatus(id, BreakdownStatus.NEEDS_CLIENTS_ACCEPTENCE));
+		return ResponseEntity.ok(breakdownService.complete(id, BreakdownStatus.NEEDS_CLIENTS_ACCEPTENCE));
 	}
 
 	@PutMapping("/{id}/accept")

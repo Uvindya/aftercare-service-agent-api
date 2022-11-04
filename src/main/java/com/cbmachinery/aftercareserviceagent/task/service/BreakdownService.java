@@ -1,6 +1,7 @@
 package com.cbmachinery.aftercareserviceagent.task.service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -29,7 +30,15 @@ public interface BreakdownService {
 
 	BreakdownOutputDTO changeStatus(long id, BreakdownStatus status);
 
+	BreakdownOutputDTO start(long id, BreakdownStatus status);
+
+	BreakdownOutputDTO complete(long id, BreakdownStatus status);
+
 	BreakdownOutputDTO addNotes(long id, BreakdownNotesInputDTO notesInput);
 
 	List<Breakdown> findByReportedAt(LocalDate from, LocalDate to);
+
+	List<Breakdown> findByAssignedAt(LocalDateTime from, LocalDateTime to);
+
+	List<Breakdown> findByAssignedAtForTechnician(LocalDateTime from, LocalDateTime to, long technicianId);
 }
