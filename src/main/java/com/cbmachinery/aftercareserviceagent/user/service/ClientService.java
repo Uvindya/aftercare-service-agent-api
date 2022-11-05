@@ -26,4 +26,6 @@ public interface ClientService {
 
 	void importFromCSV(MultipartFile csv);
 
+	long count();
+
 }

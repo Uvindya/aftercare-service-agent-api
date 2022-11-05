@@ -133,4 +133,9 @@ public class ClientServiceImpl implements ClientService {
 				.orElseThrow(() -> new ResourceNotFoundException("No Client found for this ID"));
 	}
 
+	@Override
+	public long count() {
+		return this.clientRepository.count();
+	}
+
 }

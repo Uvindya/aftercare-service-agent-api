@@ -51,4 +51,6 @@ public interface BreakdownRepository extends JpaRepository<Breakdown, Long> {
 	@Query(value = "SELECT * FROM breakdowns WHERE technician_id=:technicianId AND (assigned_at >=:from OR assigned_at <=:to)", nativeQuery = true)
 	List<Breakdown> findByAssignedAtBetweenForTechnician(@Param("from") LocalDateTime from,
 			@Param("to") LocalDateTime to, @Param("technicianId") long technicianId);
+
+	long countByStatusIn(List<BreakdownStatus> status);
 }

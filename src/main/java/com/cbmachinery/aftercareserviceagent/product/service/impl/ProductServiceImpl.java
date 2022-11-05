@@ -139,4 +139,9 @@ public class ProductServiceImpl implements ProductService {
 				.collect(Collectors.toList());
 	}
 
+	@Override
+	public long count() {
+		return this.productRepository.count();
+	}
+
 }

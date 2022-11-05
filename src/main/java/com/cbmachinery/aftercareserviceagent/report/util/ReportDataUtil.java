@@ -1,6 +1,8 @@
 package com.cbmachinery.aftercareserviceagent.report.util;
 
+import java.text.DateFormatSymbols;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -169,6 +171,10 @@ public class ReportDataUtil {
 			escapedData = "\"" + data + "\"";
 		}
 		return escapedData;
+	}
+
+	public static List<String> getAllMonths() {
+		return Arrays.asList(new DateFormatSymbols().getMonths());
 	}
 
 }

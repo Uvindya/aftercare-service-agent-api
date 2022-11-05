@@ -2,6 +2,7 @@ package com.cbmachinery.aftercareserviceagent.task.service.impl;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -161,6 +162,38 @@ public class MaintainanceServiceImpl implements MaintainanceService {
 	@Override
 	public List<Maintainance> findByAssignedAtForTechnician(LocalDateTime from, LocalDateTime to, long technicianId) {
 		return this.maintainanceRepository.findByAssignedAtBetweenForTechnician(from, to, technicianId);
+	}
+
+	@Override
+	public long count() {
+		return this.maintainanceRepository.count();
+	}
+
+	@Override
+	public long inProgressCount() {
+		return this.maintainanceRepository.countByStatusIn(
+				Arrays.asList(MaintainanceStatus.IN_PROGRESS, MaintainanceStatus.NEEDS_CLIENTS_ACCEPTENCE));
+	}
+
+	@Override
+	public long notStartedCount() {
+		return this.maintainanceRepository.countByStatusIn(
+				Arrays.asList(MaintainanceStatus.CLIENT_ACKNOWLEDGED, MaintainanceStatus.TECH_ASSIGNED));
+	}
+
+	@Override
+	public long completedCount() {
+		return this.maintainanceRepository.countByStatusIn(Arrays.asList(MaintainanceStatus.COMPLETED));
+	}
+
+	@Override
+	public long scheduledCount() {
+		return this.maintainanceRepository.countByStatusIn(Arrays.asList(MaintainanceStatus.SCHEDULED));
+	}
+
+	@Override
+	public List<Maintainance> findByScheduledAt(LocalDate from, LocalDate to) {
+		return this.maintainanceRepository.findByScheduledDateBetween(from, to);
 	}
 
 }

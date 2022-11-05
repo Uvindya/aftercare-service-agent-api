@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.cbmachinery.aftercareserviceagent.report.dto.BreakdownKeys;
+import com.cbmachinery.aftercareserviceagent.report.dto.DashboardOutputDTO;
 import com.cbmachinery.aftercareserviceagent.report.dto.MaintainanceKeys;
 import com.cbmachinery.aftercareserviceagent.report.dto.ReporKeysOutputDTO;
 import com.cbmachinery.aftercareserviceagent.report.dto.WorksheetKeys;
@@ -20,5 +21,7 @@ public interface ReportService {
 	public byte[] worksheetReport(List<WorksheetKeys> keys, LocalDateTime from, LocalDateTime to, long technicianId);
 
 	public ReporKeysOutputDTO getReportKeys();
+	
+	public DashboardOutputDTO dashboardSummary();
 
 }

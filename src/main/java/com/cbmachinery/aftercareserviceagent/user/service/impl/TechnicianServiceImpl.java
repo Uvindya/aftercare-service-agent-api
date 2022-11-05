@@ -133,4 +133,9 @@ public class TechnicianServiceImpl implements TechnicianService {
 				.orElseThrow(() -> new ResourceNotFoundException("No Technician found for this ID"));
 	}
 
+	@Override
+	public long count() {
+		return this.technicianRepository.count();
+	}
+
 }

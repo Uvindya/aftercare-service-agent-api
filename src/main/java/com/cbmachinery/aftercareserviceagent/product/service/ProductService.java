@@ -30,4 +30,6 @@ public interface ProductService {
 	void importFromCSV(MultipartFile csv);
 
 	List<Product> findByClient(Client client);
+
+	long count();
 }

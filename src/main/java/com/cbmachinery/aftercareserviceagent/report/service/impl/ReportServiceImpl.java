@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -16,8 +17,11 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.stereotype.Service;
 
+import com.cbmachinery.aftercareserviceagent.product.service.ProductService;
 import com.cbmachinery.aftercareserviceagent.report.dto.BreakdownKeys;
+import com.cbmachinery.aftercareserviceagent.report.dto.DashboardOutputDTO;
 import com.cbmachinery.aftercareserviceagent.report.dto.MaintainanceKeys;
+import com.cbmachinery.aftercareserviceagent.report.dto.MonthlySummaryDTO;
 import com.cbmachinery.aftercareserviceagent.report.dto.ReporKeysOutputDTO;
 import com.cbmachinery.aftercareserviceagent.report.dto.WorksheetKeys;
 import com.cbmachinery.aftercareserviceagent.report.exception.ReportProcessingException;
@@ -27,17 +31,27 @@ import com.cbmachinery.aftercareserviceagent.task.model.Breakdown;
 import com.cbmachinery.aftercareserviceagent.task.model.Maintainance;
 import com.cbmachinery.aftercareserviceagent.task.service.BreakdownService;
 import com.cbmachinery.aftercareserviceagent.task.service.MaintainanceService;
+import com.cbmachinery.aftercareserviceagent.user.service.ClientService;
+import com.cbmachinery.aftercareserviceagent.user.service.TechnicianService;
 
 @Service
 public class ReportServiceImpl implements ReportService {
 
 	private final BreakdownService breakdownService;
 	private final MaintainanceService maintainanceService;
+	private final ProductService productService;
+	private final TechnicianService technicianService;
+	private final ClientService clientService;
 
-	public ReportServiceImpl(final BreakdownService breakdownService, final MaintainanceService maintainanceService) {
+	public ReportServiceImpl(final BreakdownService breakdownService, final MaintainanceService maintainanceService,
+			final ProductService productService, final TechnicianService technicianService,
+			final ClientService clientService) {
 		super();
 		this.breakdownService = breakdownService;
 		this.maintainanceService = maintainanceService;
+		this.productService = productService;
+		this.technicianService = technicianService;
+		this.clientService = clientService;
 	}
 
 	@Override
@@ -151,6 +165,54 @@ public class ReportServiceImpl implements ReportService {
 		} catch (IOException e) {
 			throw new ReportProcessingException(e.getLocalizedMessage());
 		}
+	}
+
+	@Override
+	public DashboardOutputDTO dashboardSummary() {
+		long breakdownCount = this.breakdownService.count();
+		long maintainanceCount = this.maintainanceService.count();
+
+		LocalDate nextMonth = LocalDate.now().plusMonths(1);
+		long upCommingMaintainancesCount = this.maintainanceService.findUpcomming(nextMonth.withDayOfMonth(1),
+				nextMonth.withDayOfMonth(nextMonth.getMonth().length(nextMonth.isLeapYear()))).size();
+
+		long inProgressMaintainanceCount = this.maintainanceService.inProgressCount();
+
+		long totalTasksCount = breakdownCount + maintainanceCount;
+
+		long totalTasksAfterRemovingScheduled = totalTasksCount - this.maintainanceService.scheduledCount();
+
+		double notStartedPercentage = ((this.breakdownService.notStartedCount()
+				+ this.maintainanceService.notStartedCount()) / (double) totalTasksAfterRemovingScheduled) * 100;
+
+		long inProgressBreakdownCount = this.breakdownService.inProgressCount();
+
+		double inprogressPercentage = ((inProgressBreakdownCount + inProgressMaintainanceCount)
+				/ (double) totalTasksAfterRemovingScheduled) * 100;
+
+		double completedPercentage = ((this.maintainanceService.completedCount()
+				+ this.breakdownService.completedCount()) / (double) totalTasksAfterRemovingScheduled) * 100;
+
+		List<MonthlySummaryDTO> montlySummaries = new ArrayList<>();
+
+		for (LocalDate date = LocalDate.now().minusMonths(12); date
+				.isBefore(LocalDate.now()); date = date.plusMonths(1)) {
+			long maintainancesCount = this.maintainanceService.findByScheduledAt(date.withDayOfMonth(1),
+					date.withDayOfMonth(date.getMonth().length(date.isLeapYear()))).size();
+
+			long breakdownsCount = this.breakdownService.findByReportedAt(date.withDayOfMonth(1),
+					date.withDayOfMonth(date.getMonth().length(date.isLeapYear()))).size();
+
+			montlySummaries.add(new MonthlySummaryDTO(date.getYear() + " " + date.getMonth().name(), maintainancesCount,
+					breakdownsCount));
+		}
+
+		return new DashboardOutputDTO(this.productService.count(), this.clientService.count(),
+				this.technicianService.count(), totalTasksCount, maintainanceCount, breakdownCount,
+				inProgressBreakdownCount + inProgressMaintainanceCount, upCommingMaintainancesCount,
+				this.breakdownService.pendingCount(), inProgressMaintainanceCount,
+				this.breakdownService.pendingAcceptenceCount(), notStartedPercentage, inprogressPercentage,
+				completedPercentage, montlySummaries);
 	}
 
 }

@@ -41,4 +41,16 @@ public interface BreakdownService {
 	List<Breakdown> findByAssignedAt(LocalDateTime from, LocalDateTime to);
 
 	List<Breakdown> findByAssignedAtForTechnician(LocalDateTime from, LocalDateTime to, long technicianId);
+
+	long count();
+	
+	long inProgressCount();
+	
+	long pendingCount();
+	
+	long pendingAcceptenceCount();
+
+	long notStartedCount();
+
+	long completedCount();
 }

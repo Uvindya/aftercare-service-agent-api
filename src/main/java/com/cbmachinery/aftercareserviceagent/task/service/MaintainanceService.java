@@ -40,9 +40,21 @@ public interface MaintainanceService {
 
 	List<Maintainance> findByReportedAt(LocalDate from, LocalDate to);
 
+	List<Maintainance> findByScheduledAt(LocalDate from, LocalDate to);
+
 	List<Maintainance> findUpcomming(LocalDate from, LocalDate to);
 
 	List<Maintainance> findByAssignedAt(LocalDateTime from, LocalDateTime to);
 
 	List<Maintainance> findByAssignedAtForTechnician(LocalDateTime from, LocalDateTime to, long technicianId);
+
+	long count();
+
+	long inProgressCount();
+
+	long notStartedCount();
+
+	long completedCount();
+
+	long scheduledCount();
 }

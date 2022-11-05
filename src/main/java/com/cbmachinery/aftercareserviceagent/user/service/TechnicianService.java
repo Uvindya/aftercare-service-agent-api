@@ -25,4 +25,6 @@ public interface TechnicianService {
 	List<BasicUserOutputDTO> findAll();
 
 	Technician findByUsername(String username);
+
+	long count();
 }

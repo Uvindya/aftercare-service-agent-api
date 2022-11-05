@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.cbmachinery.aftercareserviceagent.report.dto.BreakdownKeys;
+import com.cbmachinery.aftercareserviceagent.report.dto.DashboardOutputDTO;
 import com.cbmachinery.aftercareserviceagent.report.dto.MaintainanceKeys;
 import com.cbmachinery.aftercareserviceagent.report.dto.ReporKeysOutputDTO;
 import com.cbmachinery.aftercareserviceagent.report.dto.WorksheetKeys;
@@ -87,5 +88,10 @@ public class ReportController {
 	@GetMapping("/keys")
 	public ResponseEntity<ReporKeysOutputDTO> getReportKeys() {
 		return ResponseEntity.ok(this.reportService.getReportKeys());
+	}
+
+	@GetMapping("/dashboard")
+	public ResponseEntity<DashboardOutputDTO> getDashboardSummary() {
+		return ResponseEntity.ok(this.reportService.dashboardSummary());
 	}
 }

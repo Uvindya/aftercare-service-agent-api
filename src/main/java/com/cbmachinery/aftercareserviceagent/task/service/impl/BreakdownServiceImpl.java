@@ -2,6 +2,7 @@ package com.cbmachinery.aftercareserviceagent.task.service.impl;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -147,5 +148,38 @@ public class BreakdownServiceImpl implements BreakdownService {
 	@Override
 	public List<Breakdown> findByAssignedAtForTechnician(LocalDateTime from, LocalDateTime to, long technicianId) {
 		return this.breakdownRepository.findByAssignedAtBetweenForTechnician(from, to, technicianId);
+	}
+
+	@Override
+	public long count() {
+		return this.breakdownRepository.count();
+	}
+
+	@Override
+	public long inProgressCount() {
+		return this.breakdownRepository
+				.countByStatusIn(Arrays.asList(BreakdownStatus.IN_PROGRESS, BreakdownStatus.NEEDS_CLIENTS_ACCEPTENCE));
+	}
+
+	@Override
+	public long pendingCount() {
+		return this.breakdownRepository.countByStatusIn(
+				Arrays.asList(BreakdownStatus.IN_PROGRESS, BreakdownStatus.NEW, BreakdownStatus.TECH_ASSIGNED));
+	}
+
+	@Override
+	public long pendingAcceptenceCount() {
+		return this.breakdownRepository.countByStatusIn(Arrays.asList(BreakdownStatus.NEEDS_CLIENTS_ACCEPTENCE));
+	}
+
+	@Override
+	public long notStartedCount() {
+		return this.breakdownRepository
+				.countByStatusIn(Arrays.asList(BreakdownStatus.NEW, BreakdownStatus.TECH_ASSIGNED));
+	}
+
+	@Override
+	public long completedCount() {
+		return this.breakdownRepository.countByStatusIn(Arrays.asList(BreakdownStatus.COMPLETED));
 	}
 }

@@ -50,6 +50,8 @@ public interface MaintainanceRepository extends JpaRepository<Maintainance, Long
 
 	List<Maintainance> findByReportedAtBetween(LocalDate from, LocalDate to);
 
+	List<Maintainance> findByScheduledDateBetween(LocalDate from, LocalDate to);
+
 	List<Maintainance> findByScheduledDateBetweenAndStatusNotIn(LocalDate from, LocalDate to,
 			List<MaintainanceStatus> status);
 
@@ -58,4 +60,6 @@ public interface MaintainanceRepository extends JpaRepository<Maintainance, Long
 	@Query(value = "SELECT * FROM maintainances WHERE technician_id=:technicianId AND (assigned_at >=:from OR assigned_at <=:to)", nativeQuery = true)
 	List<Maintainance> findByAssignedAtBetweenForTechnician(@Param("from") LocalDateTime from,
 			@Param("to") LocalDateTime to, @Param("technicianId") long technicianId);
+
+	long countByStatusIn(List<MaintainanceStatus> status);
 }
