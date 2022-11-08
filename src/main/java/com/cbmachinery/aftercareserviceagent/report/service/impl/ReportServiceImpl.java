@@ -17,18 +17,25 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.springframework.stereotype.Service;
 
+import com.cbmachinery.aftercareserviceagent.product.dto.BasicProductOutputDTO;
 import com.cbmachinery.aftercareserviceagent.product.service.ProductService;
 import com.cbmachinery.aftercareserviceagent.report.dto.BreakdownKeys;
+import com.cbmachinery.aftercareserviceagent.report.dto.ClientDashboardOutputDTO;
 import com.cbmachinery.aftercareserviceagent.report.dto.DashboardOutputDTO;
 import com.cbmachinery.aftercareserviceagent.report.dto.MaintainanceKeys;
 import com.cbmachinery.aftercareserviceagent.report.dto.MonthlySummaryDTO;
 import com.cbmachinery.aftercareserviceagent.report.dto.ReporKeysOutputDTO;
+import com.cbmachinery.aftercareserviceagent.report.dto.TechnicianDashboardOutputDTO;
 import com.cbmachinery.aftercareserviceagent.report.dto.WorksheetKeys;
 import com.cbmachinery.aftercareserviceagent.report.exception.ReportProcessingException;
 import com.cbmachinery.aftercareserviceagent.report.service.ReportService;
 import com.cbmachinery.aftercareserviceagent.report.util.ReportDataUtil;
+import com.cbmachinery.aftercareserviceagent.task.dto.BasicBreakdownOutputDTO;
+import com.cbmachinery.aftercareserviceagent.task.dto.BasicMaintainanceOutputDTO;
 import com.cbmachinery.aftercareserviceagent.task.model.Breakdown;
 import com.cbmachinery.aftercareserviceagent.task.model.Maintainance;
+import com.cbmachinery.aftercareserviceagent.task.model.enums.BreakdownStatus;
+import com.cbmachinery.aftercareserviceagent.task.model.enums.MaintainanceStatus;
 import com.cbmachinery.aftercareserviceagent.task.service.BreakdownService;
 import com.cbmachinery.aftercareserviceagent.task.service.MaintainanceService;
 import com.cbmachinery.aftercareserviceagent.user.service.ClientService;
@@ -213,6 +220,63 @@ public class ReportServiceImpl implements ReportService {
 				this.breakdownService.pendingCount(), inProgressMaintainanceCount,
 				this.breakdownService.pendingAcceptenceCount(), notStartedPercentage, inprogressPercentage,
 				completedPercentage, montlySummaries);
+	}
+
+	@Override
+	public ClientDashboardOutputDTO clientDashboardSummary(String username) {
+		List<BasicProductOutputDTO> clientProducts = this.productService.findMyProducts(username);
+		List<BasicMaintainanceOutputDTO> clientMaintainances = this.maintainanceService.findMyOwnership(username);
+		List<BasicBreakdownOutputDTO> clientBreakdowns = this.breakdownService.findMyOwnership(username);
+
+		LocalDate nextMonth = LocalDate.now().plusMonths(1);
+
+		long activeBreakdowns = clientBreakdowns.stream()
+				.filter(b -> Arrays.asList(BreakdownStatus.NEW, BreakdownStatus.TECH_ASSIGNED,
+						BreakdownStatus.IN_PROGRESS, BreakdownStatus.NEEDS_CLIENTS_ACCEPTENCE).contains(b.getStatus()))
+				.count();
+
+		long upCommingMaintainances = clientMaintainances.stream()
+				.filter(m -> Arrays
+						.asList(MaintainanceStatus.CLIENT_ACKNOWLEDGED, MaintainanceStatus.SCHEDULED,
+								MaintainanceStatus.TECH_ASSIGNED)
+						.contains(m.getStatus()) && m.getScheduledDate().isAfter(nextMonth.withDayOfMonth(1))
+						&& m.getScheduledDate().isBefore(
+								nextMonth.withDayOfMonth(nextMonth.getMonth().length(nextMonth.isLeapYear()))))
+				.count();
+
+		long breakdownsForAcceptence = clientBreakdowns.stream()
+				.filter(b -> Arrays.asList(BreakdownStatus.NEEDS_CLIENTS_ACCEPTENCE).contains(b.getStatus())).count();
+		long maintainanceForAcceptence = clientMaintainances.stream()
+				.filter(m -> Arrays.asList(MaintainanceStatus.NEEDS_CLIENTS_ACCEPTENCE).contains(m.getStatus()))
+				.count();
+
+		return new ClientDashboardOutputDTO(clientProducts.size(), activeBreakdowns,
+				breakdownsForAcceptence + maintainanceForAcceptence, upCommingMaintainances);
+	}
+
+	@Override
+	public TechnicianDashboardOutputDTO technicianDashboardSummary(String username) {
+
+		List<BasicMaintainanceOutputDTO> technicianMaintainances = this.maintainanceService.findMyAssigns(username);
+		List<BasicBreakdownOutputDTO> technicianBreakdowns = this.breakdownService.findMyAssigns(username);
+
+		LocalDate nextMonth = LocalDate.now().plusMonths(1);
+
+		long activeBreakdowns = technicianBreakdowns.stream().filter(b -> Arrays.asList(BreakdownStatus.TECH_ASSIGNED,
+				BreakdownStatus.IN_PROGRESS, BreakdownStatus.NEEDS_CLIENTS_ACCEPTENCE).contains(b.getStatus())).count();
+
+		long upCommingMaintainances = technicianMaintainances.stream().filter(
+				m -> Arrays.asList(MaintainanceStatus.TECH_ASSIGNED).contains(m.getStatus()) && m.getScheduledDate()
+						.isBefore(nextMonth.withDayOfMonth(nextMonth.getMonth().length(nextMonth.isLeapYear()))))
+				.count();
+
+		long activeMaintainances = technicianMaintainances.stream()
+				.filter(m -> Arrays.asList(MaintainanceStatus.IN_PROGRESS, MaintainanceStatus.NEEDS_CLIENTS_ACCEPTENCE)
+						.contains(m.getStatus()))
+				.count();
+
+		return new TechnicianDashboardOutputDTO(technicianMaintainances.size() + technicianBreakdowns.size(),
+				activeBreakdowns, activeMaintainances, upCommingMaintainances);
 	}
 
 }
