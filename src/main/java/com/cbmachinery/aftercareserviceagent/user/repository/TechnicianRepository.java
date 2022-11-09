@@ -13,4 +13,6 @@ public interface TechnicianRepository extends JpaRepository<Technician, Long> {
 			String email, String firstName, String lastName, String erpId, Pageable pageable);
 
 	Optional<Technician> findByEmail(String username);
+
+	Optional<Technician> findByErpId(String erpId);
 }

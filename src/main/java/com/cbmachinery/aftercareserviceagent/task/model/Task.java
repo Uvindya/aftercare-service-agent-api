@@ -73,6 +73,8 @@ public abstract class Task extends Auditable<String> {
 	@Column(columnDefinition = "TEXT")
 	private String additionalNote;
 
+	private String erpId;
+
 	@JsonIgnore
 	public BasicTaskOutputDTO viewAsBasicDTO() {
 		long techId = 0;

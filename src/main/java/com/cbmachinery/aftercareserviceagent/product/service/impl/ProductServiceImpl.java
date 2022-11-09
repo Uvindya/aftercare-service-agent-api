@@ -144,4 +144,10 @@ public class ProductServiceImpl implements ProductService {
 		return this.productRepository.count();
 	}
 
+	@Override
+	public Product findByErpId(String erpId) {
+		return productRepository.findByErpId(erpId)
+				.orElseThrow(() -> new ResourceNotFoundException("No Product found for this ERP ID"));
+	}
+
 }

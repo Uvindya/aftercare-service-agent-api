@@ -1,19 +1,28 @@
 package com.cbmachinery.aftercareserviceagent.task.service.impl;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.cbmachinery.aftercareserviceagent.common.exception.ResourceNotFoundException;
+import com.cbmachinery.aftercareserviceagent.common.util.DateTimeUtil;
 import com.cbmachinery.aftercareserviceagent.product.model.Product;
 import com.cbmachinery.aftercareserviceagent.product.service.ProductService;
 import com.cbmachinery.aftercareserviceagent.task.dto.BasicMaintainanceOutputDTO;
@@ -23,6 +32,7 @@ import com.cbmachinery.aftercareserviceagent.task.dto.NotesInputDTO;
 import com.cbmachinery.aftercareserviceagent.task.dto.TechnicianTaskAssignmentDTO;
 import com.cbmachinery.aftercareserviceagent.task.model.Maintainance;
 import com.cbmachinery.aftercareserviceagent.task.model.enums.MaintainanceStatus;
+import com.cbmachinery.aftercareserviceagent.task.model.enums.MaintainanceType;
 import com.cbmachinery.aftercareserviceagent.task.repository.MaintainanceRepository;
 import com.cbmachinery.aftercareserviceagent.task.service.MaintainanceService;
 import com.cbmachinery.aftercareserviceagent.user.model.Client;
@@ -194,6 +204,47 @@ public class MaintainanceServiceImpl implements MaintainanceService {
 	@Override
 	public List<Maintainance> findByScheduledAt(LocalDate from, LocalDate to) {
 		return this.maintainanceRepository.findByScheduledDateBetween(from, to);
+	}
+
+	@Override
+	public void importFromCSV(MultipartFile csv) {
+		CSVParser csvParser;
+
+		try {
+			BufferedReader fileReader = new BufferedReader(new InputStreamReader(csv.getInputStream(), "UTF-8"));
+			csvParser = new CSVParser(fileReader, CSVFormat.DEFAULT);
+			Iterable<CSVRecord> csvRecords = csvParser.getRecords();
+			int row = 0;
+
+			List<Maintainance> maintainanceCSVRows = new ArrayList<>();
+
+			for (CSVRecord cr : csvRecords) {
+				if (row != 0) {
+					Product product = productService.findByErpId(cr.get(8));
+					Technician technician = technicianService.findByErpId(cr.get(9));
+					maintainanceCSVRows.add(Maintainance.builder().erpId(cr.get(0)).description(cr.get(1))
+							.reportedAt(DateTimeUtil.fomatToLongDate(cr.get(2)))
+							.startedAt(DateTimeUtil.fomatToLongDateTime(cr.get(4)))
+							.assignedAt(DateTimeUtil.fomatToLongDateTime(cr.get(3)))
+							.completedAt(DateTimeUtil.fomatToLongDateTime(cr.get(5)))
+							.scheduledDate(DateTimeUtil.fomatToLongDate(cr.get(6)))
+							.targetCompletionDate(DateTimeUtil.fomatToLongDate(cr.get(7))).product(product)
+							.technician(technician).completionNote(cr.get(10)).additionalNote(cr.get(11))
+							.maintainanceType(MaintainanceType.valueOf(cr.get(12)))
+							.status(MaintainanceStatus.valueOf(cr.get(13)))
+							.approvedAt(DateTimeUtil.fomatToLongDateTime(cr.get(14))).build());
+				}
+
+				row++;
+			}
+
+			maintainanceCSVRows.stream().forEach(m -> this.maintainanceRepository.save(m));
+
+			csvParser.close();
+		} catch (IOException e) {
+			throw new IllegalArgumentException("Error in Client import !!!");
+		}
+
 	}
 
 }

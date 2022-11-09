@@ -138,4 +138,10 @@ public class TechnicianServiceImpl implements TechnicianService {
 		return this.technicianRepository.count();
 	}
 
+	@Override
+	public Technician findByErpId(String erpId) {
+		return technicianRepository.findByErpId(erpId)
+				.orElseThrow(() -> new ResourceNotFoundException("No Technician found for this ERP ID"));
+	}
+
 }

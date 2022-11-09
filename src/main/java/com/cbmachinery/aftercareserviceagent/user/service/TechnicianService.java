@@ -27,4 +27,6 @@ public interface TechnicianService {
 	Technician findByUsername(String username);
 
 	long count();
+
+	Technician findByErpId(String erpId);
 }

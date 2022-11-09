@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.cbmachinery.aftercareserviceagent.task.dto.BasicBreakdownOutputDTO;
 import com.cbmachinery.aftercareserviceagent.task.dto.BreakdownInputDTO;
@@ -43,14 +44,16 @@ public interface BreakdownService {
 	List<Breakdown> findByAssignedAtForTechnician(LocalDateTime from, LocalDateTime to, long technicianId);
 
 	long count();
-	
+
 	long inProgressCount();
-	
+
 	long pendingCount();
-	
+
 	long pendingAcceptenceCount();
 
 	long notStartedCount();
 
 	long completedCount();
+
+	void importFromCSV(MultipartFile csv);
 }

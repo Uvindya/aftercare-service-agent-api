@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.cbmachinery.aftercareserviceagent.task.dto.BasicBreakdownOutputDTO;
 import com.cbmachinery.aftercareserviceagent.task.dto.BreakdownInputDTO;
@@ -89,5 +90,11 @@ public class BreakdownController {
 	public ResponseEntity<List<BasicBreakdownOutputDTO>> findMyOwnerships() {
 		return ResponseEntity
 				.ok(breakdownService.findMyOwnership(SecurityContextHolder.getContext().getAuthentication().getName()));
+	}
+
+	@PostMapping("/import")
+	public ResponseEntity<Void> importFromCSV(@RequestParam("file") MultipartFile file) {
+		breakdownService.importFromCSV(file);
+		return new ResponseEntity<>(null, HttpStatus.CREATED);
 	}
 }

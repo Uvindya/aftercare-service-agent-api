@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.cbmachinery.aftercareserviceagent.task.dto.BasicMaintainanceOutputDTO;
 import com.cbmachinery.aftercareserviceagent.task.dto.MaintainanceInputDTO;
@@ -57,4 +58,6 @@ public interface MaintainanceService {
 	long completedCount();
 
 	long scheduledCount();
+	
+	void importFromCSV(MultipartFile csv);
 }

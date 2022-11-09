@@ -32,4 +32,6 @@ public interface ProductService {
 	List<Product> findByClient(Client client);
 
 	long count();
+
+	Product findByErpId(String erpId);
 }
