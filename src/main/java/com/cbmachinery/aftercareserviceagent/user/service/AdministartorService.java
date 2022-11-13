@@ -1,5 +1,9 @@
 package com.cbmachinery.aftercareserviceagent.user.service;
 
-public interface AdministartorService {
+import java.util.List;
 
+import com.cbmachinery.aftercareserviceagent.user.model.Administrator;
+
+public interface AdministartorService {
+	List<Administrator> findAll();
 }

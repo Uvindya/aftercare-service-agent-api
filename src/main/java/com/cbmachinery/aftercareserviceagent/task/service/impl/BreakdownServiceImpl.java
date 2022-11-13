@@ -23,6 +23,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.cbmachinery.aftercareserviceagent.common.exception.ResourceNotFoundException;
 import com.cbmachinery.aftercareserviceagent.common.util.DateTimeUtil;
+import com.cbmachinery.aftercareserviceagent.notification.model.Category;
+import com.cbmachinery.aftercareserviceagent.notification.model.Group;
+import com.cbmachinery.aftercareserviceagent.notification.sender.NotificationSender;
 import com.cbmachinery.aftercareserviceagent.product.model.Product;
 import com.cbmachinery.aftercareserviceagent.product.service.ProductService;
 import com.cbmachinery.aftercareserviceagent.task.dto.BasicBreakdownOutputDTO;
@@ -49,14 +52,17 @@ public class BreakdownServiceImpl implements BreakdownService {
 	private final ProductService productService;
 	private final TechnicianService technicianService;
 	private final ClientService clientService;
+	private final NotificationSender notificationSender;
 
 	public BreakdownServiceImpl(final BreakdownRepository breakdownRepository, @Lazy ProductService productService,
-			@Lazy TechnicianService technicianService, @Lazy ClientService clientService) {
+			@Lazy TechnicianService technicianService, @Lazy ClientService clientService,
+			@Lazy final NotificationSender notificationSender) {
 		super();
 		this.breakdownRepository = breakdownRepository;
 		this.productService = productService;
 		this.technicianService = technicianService;
 		this.clientService = clientService;
+		this.notificationSender = notificationSender;
 	}
 
 	@Override
@@ -68,7 +74,16 @@ public class BreakdownServiceImpl implements BreakdownService {
 				.product(product).reportedAt(LocalDate.now()).riskLevel(breakdownInput.getRiskLevel())
 				.scheduledDate(breakdownInput.getScheduledDate()).status(BreakdownStatus.NEW).build();
 
-		return this.breakdownRepository.save(breakdownToSave).viewAsBasicDTO();
+		Breakdown savedBreakdown = this.breakdownRepository.save(breakdownToSave);
+
+		this.notificationSender.send(Group.ADMINISTRATOR,
+				product.getClient().getUserCredential().getUsername() + " has reported a breakdown",
+				"ID - " + savedBreakdown.getId() + ", Risk - " + savedBreakdown.getRiskLevel().name() + ", Priority -  "
+						+ savedBreakdown.getPriorityLevel().name() + ", Type - "
+						+ savedBreakdown.getBreakdownType().name(),
+				Category.BREAKDOWN);
+
+		return savedBreakdown.viewAsBasicDTO();
 	}
 
 	@Override

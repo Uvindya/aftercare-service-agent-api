@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.cbmachinery.aftercareserviceagent.auth.dto.UserCredentialInputDTO;
 import com.cbmachinery.aftercareserviceagent.auth.model.UserCredential;
+import com.cbmachinery.aftercareserviceagent.auth.model.enums.Role;
 import com.cbmachinery.aftercareserviceagent.auth.repository.UserCredentialRepository;
 import com.cbmachinery.aftercareserviceagent.auth.service.UserCredentialService;
 import com.cbmachinery.aftercareserviceagent.common.exception.ResourceNotFoundException;
@@ -73,6 +74,11 @@ public class UserCredentialServiceImpl implements UserCredentialService {
 	public boolean usernamesExists(List<String> usernames) {
 		List<UserCredential> existingUsers = this.userCredentialRepository.findByUsernameIn(usernames);
 		return existingUsers.size() > 0;
+	}
+
+	@Override
+	public List<UserCredential> findByRole(Role role) {
+		return this.userCredentialRepository.findByRole(role);
 	}
 
 }

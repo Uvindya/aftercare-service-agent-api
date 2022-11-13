@@ -3,9 +3,7 @@ package com.cbmachinery.aftercareserviceagent.task.model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -16,13 +14,11 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 
 import org.hibernate.envers.Audited;
 
 import com.cbmachinery.aftercareserviceagent.common.audit.Auditable;
-import com.cbmachinery.aftercareserviceagent.notification.model.Notification;
 import com.cbmachinery.aftercareserviceagent.product.model.Product;
 import com.cbmachinery.aftercareserviceagent.task.dto.BasicTaskOutputDTO;
 import com.cbmachinery.aftercareserviceagent.user.model.Client;
@@ -63,9 +59,6 @@ public abstract class Task extends Auditable<String> {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "technician_id")
 	private Technician technician;
-
-	@OneToMany(mappedBy = "task", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-	private Set<Notification> notifications;
 
 	@Column(columnDefinition = "TEXT")
 	private String completionNote;

@@ -1,19 +1,15 @@
 package com.cbmachinery.aftercareserviceagent.user.model;
 
-import java.util.Set;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 
@@ -21,7 +17,6 @@ import org.hibernate.envers.Audited;
 
 import com.cbmachinery.aftercareserviceagent.auth.model.UserCredential;
 import com.cbmachinery.aftercareserviceagent.common.audit.Auditable;
-import com.cbmachinery.aftercareserviceagent.notification.model.Notification;
 import com.cbmachinery.aftercareserviceagent.user.dto.BasicUserOutputDTO;
 import com.cbmachinery.aftercareserviceagent.user.model.enums.Gender;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -56,9 +51,6 @@ public abstract class User extends Auditable<String> {
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "user_credential_id", referencedColumnName = "id")
 	private UserCredential userCredential;
-
-	@OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
-	private Set<Notification> notifications;
 
 	@JsonIgnore
 	public BasicUserOutputDTO viewAsBasicDTO() {

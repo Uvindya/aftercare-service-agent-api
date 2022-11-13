@@ -2,20 +2,20 @@ package com.cbmachinery.aftercareserviceagent.notification.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 import org.hibernate.envers.Audited;
 
 import com.cbmachinery.aftercareserviceagent.common.audit.Auditable;
-import com.cbmachinery.aftercareserviceagent.task.model.Task;
-import com.cbmachinery.aftercareserviceagent.user.model.User;
+import com.cbmachinery.aftercareserviceagent.common.util.DateTimeUtil;
+import com.cbmachinery.aftercareserviceagent.notification.dto.NotificationOutputDTO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,15 +34,22 @@ public class Notification extends Auditable<String> {
 	@SequenceGenerator(name = "notifications_sequence", allocationSize = 20)
 	private long id;
 
+	private String title;
+
 	@Column(columnDefinition = "TEXT")
 	private String message;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "user_id", nullable = false)
-	private User user;
+	private String owner;
 
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "task_id", nullable = false)
-	private Task task;
+	private boolean isRead;
+
+	@Enumerated(EnumType.STRING)
+	private Category category;
+
+	@JsonIgnore
+	public NotificationOutputDTO viewAsDTO() {
+		return new NotificationOutputDTO(id, title, message, owner, isRead, category,
+				DateTimeUtil.fomatToLongDateTime(createdAt), DateTimeUtil.fomatToLongDateTime(modifiedAt));
+	}
 
 }

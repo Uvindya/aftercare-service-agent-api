@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cbmachinery.aftercareserviceagent.auth.dto.UserCredentialInputDTO;
 import com.cbmachinery.aftercareserviceagent.auth.model.UserCredential;
+import com.cbmachinery.aftercareserviceagent.auth.model.enums.Role;
 
 public interface UserCredentialService {
 	UserCredential findByUsername(String username);
@@ -17,4 +18,6 @@ public interface UserCredentialService {
 	void changeActiveStatus(String username, boolean active);
 
 	boolean usernamesExists(List<String> usernames);
+
+	List<UserCredential> findByRole(Role role);
 }

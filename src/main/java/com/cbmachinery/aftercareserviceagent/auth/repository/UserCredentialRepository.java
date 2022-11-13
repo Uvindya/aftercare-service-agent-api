@@ -9,12 +9,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.cbmachinery.aftercareserviceagent.auth.model.UserCredential;
+import com.cbmachinery.aftercareserviceagent.auth.model.enums.Role;
 
 public interface UserCredentialRepository extends JpaRepository<UserCredential, Long> {
 
 	Optional<UserCredential> findByUsername(String username);
 
 	List<UserCredential> findByUsernameIn(List<String> usernames);
+
+	List<UserCredential> findByRole(Role role);
 
 	boolean existsByUsername(String username);
 
