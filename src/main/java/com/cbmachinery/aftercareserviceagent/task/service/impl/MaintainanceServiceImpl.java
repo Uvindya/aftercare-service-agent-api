@@ -23,6 +23,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.cbmachinery.aftercareserviceagent.common.exception.ResourceNotFoundException;
 import com.cbmachinery.aftercareserviceagent.common.util.DateTimeUtil;
+import com.cbmachinery.aftercareserviceagent.notification.model.Category;
+import com.cbmachinery.aftercareserviceagent.notification.model.Group;
+import com.cbmachinery.aftercareserviceagent.notification.sender.NotificationSender;
 import com.cbmachinery.aftercareserviceagent.product.model.Product;
 import com.cbmachinery.aftercareserviceagent.product.service.ProductService;
 import com.cbmachinery.aftercareserviceagent.task.dto.BasicMaintainanceOutputDTO;
@@ -47,15 +50,17 @@ public class MaintainanceServiceImpl implements MaintainanceService {
 	private final ProductService productService;
 	private final TechnicianService technicianService;
 	private final ClientService clientService;
+	private final NotificationSender notificationSender;
 
 	public MaintainanceServiceImpl(final MaintainanceRepository maintainanceRepository,
 			@Lazy ProductService productService, @Lazy TechnicianService technicianService,
-			@Lazy ClientService clientService) {
+			@Lazy ClientService clientService, @Lazy final NotificationSender notificationSender) {
 		super();
 		this.maintainanceRepository = maintainanceRepository;
 		this.productService = productService;
 		this.technicianService = technicianService;
 		this.clientService = clientService;
+		this.notificationSender = notificationSender;
 	}
 
 	@Override
@@ -91,13 +96,30 @@ public class MaintainanceServiceImpl implements MaintainanceService {
 				.orElseThrow(() -> new ResourceNotFoundException("No Maintainance found for this ID"));
 	}
 
+	private Maintainance findByIdAsDomain(long id) {
+		return maintainanceRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("No Maintainance found for this ID"));
+	}
+
 	@Override
 	@Transactional
 	public MaintainanceOutputDTO assignTechnician(TechnicianTaskAssignmentDTO technicianTaskAssignment) {
 		Technician technician = this.technicianService.findByIdAsRaw(technicianTaskAssignment.getTechnicianId());
 		maintainanceRepository.assignTechnician(technicianTaskAssignment.getTaskId(), technician,
 				MaintainanceStatus.TECH_ASSIGNED, LocalDateTime.now());
-		return findById(technicianTaskAssignment.getTaskId());
+		Maintainance updatedMaintainance = findByIdAsDomain(technicianTaskAssignment.getTaskId());
+
+		this.notificationSender.send(technician.getUserCredential().getUsername(),
+				"You have been assigned to a Maintainance Task",
+				"ID - " + updatedMaintainance.getId() + ", Type - " + updatedMaintainance.getMaintainanceType().name()
+						+ ", Scheduled Date -  " + updatedMaintainance.getScheduledDate(),
+				Category.MAINTAINANCE);
+
+		this.notificationSender.send(updatedMaintainance.getProduct().getClient().getUserCredential().getUsername(),
+				"Technician has assigned to your Maintainance Task", "ID - " + technicianTaskAssignment.getTaskId(),
+				Category.MAINTAINANCE);
+
+		return updatedMaintainance.viewAsDTO();
 	}
 
 	@Override
@@ -111,28 +133,64 @@ public class MaintainanceServiceImpl implements MaintainanceService {
 	@Transactional
 	public MaintainanceOutputDTO approve(long id, MaintainanceStatus status) {
 		maintainanceRepository.approve(id, status, LocalDateTime.now());
-		return findById(id);
+		Maintainance updatedMaintainance = findByIdAsDomain(id);
+
+		this.notificationSender.send(updatedMaintainance.getTechnician().getUserCredential().getUsername(),
+				"Client has approved a Maintainance Task", "ID - " + updatedMaintainance.getId(),
+				Category.MAINTAINANCE);
+
+		this.notificationSender.send(Group.ADMINISTRATOR, "Client has approved a Maintainance Task",
+				"ID - " + updatedMaintainance.getId(), Category.MAINTAINANCE);
+
+		return updatedMaintainance.viewAsDTO();
 	}
 
 	@Override
 	@Transactional
 	public MaintainanceOutputDTO start(long id, MaintainanceStatus status) {
 		maintainanceRepository.start(id, status, LocalDateTime.now());
-		return findById(id);
+		Maintainance updatedMaintainance = findByIdAsDomain(id);
+
+		this.notificationSender.send(Group.ADMINISTRATOR, "Technician has started to work on Maintainance Task",
+				"ID - " + updatedMaintainance.getId(), Category.MAINTAINANCE);
+
+		this.notificationSender.send(updatedMaintainance.getProduct().getClient().getUserCredential().getUsername(),
+				"Technician has started to work on Maintainance Task", "ID - " + updatedMaintainance.getId(),
+				Category.MAINTAINANCE);
+
+		return updatedMaintainance.viewAsDTO();
 	}
 
 	@Override
 	@Transactional
 	public MaintainanceOutputDTO complete(long id, MaintainanceStatus status) {
 		maintainanceRepository.complete(id, status, LocalDateTime.now());
-		return findById(id);
+		Maintainance updatedMaintainance = findByIdAsDomain(id);
+
+		this.notificationSender.send(Group.ADMINISTRATOR, "Technician has completed the work on Maintainance Task",
+				"ID - " + updatedMaintainance.getId(), Category.MAINTAINANCE);
+
+		this.notificationSender.send(updatedMaintainance.getProduct().getClient().getUserCredential().getUsername(),
+				"Technician has completed the work on Maintainance Task", "ID - " + updatedMaintainance.getId(),
+				Category.MAINTAINANCE);
+
+		return updatedMaintainance.viewAsDTO();
 	}
 
 	@Override
 	@Transactional
 	public MaintainanceOutputDTO changeStatus(long id, MaintainanceStatus status) {
 		maintainanceRepository.changeStatus(id, status, LocalDateTime.now());
-		return findById(id);
+		Maintainance updatedMaintainance = findByIdAsDomain(id);
+
+		this.notificationSender.send(updatedMaintainance.getTechnician().getUserCredential().getUsername(),
+				"Client has accepted a Maintainance Task", "ID - " + updatedMaintainance.getId(),
+				Category.MAINTAINANCE);
+
+		this.notificationSender.send(Group.ADMINISTRATOR, "Client has accepted a Maintainance Task",
+				"ID - " + updatedMaintainance.getId(), Category.MAINTAINANCE);
+
+		return updatedMaintainance.viewAsDTO();
 	}
 
 	@Override
@@ -140,7 +198,13 @@ public class MaintainanceServiceImpl implements MaintainanceService {
 	public MaintainanceOutputDTO addNotes(long id, NotesInputDTO notesInput) {
 		maintainanceRepository.addNotes(id, notesInput.getCompletionNote(), notesInput.getAdditionalNote(),
 				LocalDateTime.now());
-		return findById(id);
+		Maintainance updatedMaintainance = findByIdAsDomain(id);
+
+		this.notificationSender.send(updatedMaintainance.getProduct().getClient().getUserCredential().getUsername(),
+				"Technician has added notes on Maintainance Task", "ID - " + updatedMaintainance.getId(),
+				Category.MAINTAINANCE);
+
+		return updatedMaintainance.viewAsDTO();
 	}
 
 	@Override
@@ -239,6 +303,9 @@ public class MaintainanceServiceImpl implements MaintainanceService {
 			}
 
 			maintainanceCSVRows.stream().forEach(m -> this.maintainanceRepository.save(m));
+
+			this.notificationSender.send(Group.ADMINISTRATOR, "Maintainance import has been completed",
+					maintainanceCSVRows.size() + " maintainances were created", Category.MAINTAINANCE);
 
 			csvParser.close();
 		} catch (IOException e) {

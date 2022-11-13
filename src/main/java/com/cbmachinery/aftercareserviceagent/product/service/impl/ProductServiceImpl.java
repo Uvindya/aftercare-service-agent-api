@@ -14,12 +14,16 @@ import java.util.stream.StreamSupport;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.cbmachinery.aftercareserviceagent.common.exception.ResourceNotFoundException;
+import com.cbmachinery.aftercareserviceagent.notification.model.Category;
+import com.cbmachinery.aftercareserviceagent.notification.model.Group;
+import com.cbmachinery.aftercareserviceagent.notification.sender.NotificationSender;
 import com.cbmachinery.aftercareserviceagent.product.dto.BasicProductOutputDTO;
 import com.cbmachinery.aftercareserviceagent.product.dto.ProductInputDTO;
 import com.cbmachinery.aftercareserviceagent.product.dto.ProductOutputDTO;
@@ -36,13 +40,15 @@ public class ProductServiceImpl implements ProductService {
 	private final ProductRepository productRepository;
 	private final ClientService clientService;
 	private final ProductMaintainanceUtil productMaintainanceUtil;
+	private final NotificationSender notificationSender;
 
 	public ProductServiceImpl(final ProductRepository productRepository, final ClientService clientService,
-			final ProductMaintainanceUtil productMaintainanceUtil) {
+			final ProductMaintainanceUtil productMaintainanceUtil, @Lazy final NotificationSender notificationSender) {
 		super();
 		this.productRepository = productRepository;
 		this.clientService = clientService;
 		this.productMaintainanceUtil = productMaintainanceUtil;
+		this.notificationSender = notificationSender;
 	}
 
 	@Override
@@ -120,6 +126,9 @@ public class ProductServiceImpl implements ProductService {
 			}
 
 			productsInputs.stream().forEach(pi -> save(pi));
+
+			this.notificationSender.send(Group.ADMINISTRATOR, "Products import has been completed",
+					productsInputs.size() + " products were created", Category.PRODUCTS);
 
 			csvParser.close();
 		} catch (IOException e) {

@@ -14,6 +14,7 @@ import java.util.stream.StreamSupport;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,9 @@ import com.cbmachinery.aftercareserviceagent.auth.model.UserCredential;
 import com.cbmachinery.aftercareserviceagent.auth.model.enums.Role;
 import com.cbmachinery.aftercareserviceagent.auth.service.UserCredentialService;
 import com.cbmachinery.aftercareserviceagent.common.exception.ResourceNotFoundException;
+import com.cbmachinery.aftercareserviceagent.notification.model.Category;
+import com.cbmachinery.aftercareserviceagent.notification.model.Group;
+import com.cbmachinery.aftercareserviceagent.notification.sender.NotificationSender;
 import com.cbmachinery.aftercareserviceagent.user.dto.BasicUserOutputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.TechnicianInputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.TechnicianOutputDTO;
@@ -37,12 +41,14 @@ public class TechnicianServiceImpl implements TechnicianService {
 
 	private final UserCredentialService userCredentialService;
 	private final TechnicianRepository technicianRepository;
+	private final NotificationSender notificationSender;
 
 	public TechnicianServiceImpl(final UserCredentialService userCredentialService,
-			final TechnicianRepository technicianRepository) {
+			final TechnicianRepository technicianRepository, @Lazy final NotificationSender notificationSender) {
 		super();
 		this.userCredentialService = userCredentialService;
 		this.technicianRepository = technicianRepository;
+		this.notificationSender = notificationSender;
 	}
 
 	@Override
@@ -107,6 +113,9 @@ public class TechnicianServiceImpl implements TechnicianService {
 			}
 
 			technicianInputs.stream().forEach(ti -> save(ti));
+
+			this.notificationSender.send(Group.ADMINISTRATOR, "Technicians import has been completed",
+					technicianInputs.size() + " technicians were created", Category.TECHNICIAN);
 
 			csvParser.close();
 		} catch (IOException e) {

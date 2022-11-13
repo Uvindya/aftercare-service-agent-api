@@ -108,13 +108,31 @@ public class BreakdownServiceImpl implements BreakdownService {
 				.orElseThrow(() -> new ResourceNotFoundException("No Breakdown found for this ID"));
 	}
 
+	private Breakdown findByIdAsDomain(long id) {
+		return breakdownRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("No Breakdown found for this ID"));
+	}
+
 	@Override
 	@Transactional
 	public BreakdownOutputDTO assignTechnician(TechnicianTaskAssignmentDTO technicianTaskAssignment) {
 		Technician technician = this.technicianService.findByIdAsRaw(technicianTaskAssignment.getTechnicianId());
 		breakdownRepository.assignTechnician(technicianTaskAssignment.getTaskId(), technician,
 				BreakdownStatus.TECH_ASSIGNED, LocalDateTime.now());
-		return findById(technicianTaskAssignment.getTaskId());
+		Breakdown updatedBreakdown = findByIdAsDomain(technicianTaskAssignment.getTaskId());
+
+		this.notificationSender.send(technician.getUserCredential().getUsername(),
+				"You have been assigned to a Breakdown Task",
+				"ID - " + technicianTaskAssignment.getTaskId() + ", Risk - " + updatedBreakdown.getRiskLevel().name()
+						+ ", Priority -  " + updatedBreakdown.getPriorityLevel().name() + ", Type - "
+						+ updatedBreakdown.getBreakdownType().name(),
+				Category.BREAKDOWN);
+
+		this.notificationSender.send(updatedBreakdown.getProduct().getClient().getUserCredential().getUsername(),
+				"Technician has assigned to your Breakdown Task", "ID - " + technicianTaskAssignment.getTaskId(),
+				Category.BREAKDOWN);
+
+		return updatedBreakdown.viewAsDTO();
 	}
 
 	@Override
@@ -128,21 +146,47 @@ public class BreakdownServiceImpl implements BreakdownService {
 	@Transactional
 	public BreakdownOutputDTO changeStatus(long id, BreakdownStatus status) {
 		breakdownRepository.changeStatus(id, status, LocalDateTime.now());
-		return findById(id);
+		Breakdown updatedBreakdown = findByIdAsDomain(id);
+
+		this.notificationSender.send(updatedBreakdown.getTechnician().getUserCredential().getUsername(),
+				"Client has accepted a Breakdown Task", "ID - " + updatedBreakdown.getId(), Category.BREAKDOWN);
+
+		this.notificationSender.send(Group.ADMINISTRATOR, "Client has accepted a Breakdown Task",
+				"ID - " + updatedBreakdown.getId(), Category.BREAKDOWN);
+
+		return updatedBreakdown.viewAsDTO();
 	}
 
 	@Override
 	@Transactional
 	public BreakdownOutputDTO start(long id, BreakdownStatus status) {
 		breakdownRepository.start(id, status, LocalDateTime.now());
-		return findById(id);
+		Breakdown updatedBreakdown = findByIdAsDomain(id);
+
+		this.notificationSender.send(Group.ADMINISTRATOR, "Technician has started to work on Breakdown Task",
+				"ID - " + updatedBreakdown.getId(), Category.BREAKDOWN);
+
+		this.notificationSender.send(updatedBreakdown.getProduct().getClient().getUserCredential().getUsername(),
+				"Technician has started to work on Breakdown Task", "ID - " + updatedBreakdown.getId(),
+				Category.BREAKDOWN);
+
+		return updatedBreakdown.viewAsDTO();
 	}
 
 	@Override
 	@Transactional
 	public BreakdownOutputDTO complete(long id, BreakdownStatus status) {
 		breakdownRepository.complete(id, status, LocalDateTime.now());
-		return findById(id);
+		Breakdown updatedBreakdown = findByIdAsDomain(id);
+
+		this.notificationSender.send(Group.ADMINISTRATOR, "Technician has completed the work on Breakdown Task",
+				"ID - " + updatedBreakdown.getId(), Category.BREAKDOWN);
+
+		this.notificationSender.send(updatedBreakdown.getProduct().getClient().getUserCredential().getUsername(),
+				"Technician has completed the work on Breakdown Task", "ID - " + updatedBreakdown.getId(),
+				Category.BREAKDOWN);
+
+		return updatedBreakdown.viewAsDTO();
 	}
 
 	@Override
@@ -150,7 +194,12 @@ public class BreakdownServiceImpl implements BreakdownService {
 	public BreakdownOutputDTO addNotes(long id, BreakdownNotesInputDTO notesInput) {
 		breakdownRepository.addNotes(id, notesInput.getCompletionNote(), notesInput.getAdditionalNote(),
 				notesInput.getRootCause(), notesInput.getSolution(), LocalDateTime.now());
-		return findById(id);
+		Breakdown updatedBreakdown = findByIdAsDomain(id);
+
+		this.notificationSender.send(updatedBreakdown.getProduct().getClient().getUserCredential().getUsername(),
+				"Technician has added notes on Breakdown Task", "ID - " + updatedBreakdown.getId(), Category.BREAKDOWN);
+
+		return updatedBreakdown.viewAsDTO();
 	}
 
 	@Override
@@ -244,6 +293,9 @@ public class BreakdownServiceImpl implements BreakdownService {
 			}
 
 			breakdownCSVRows.stream().forEach(b -> this.breakdownRepository.save(b));
+
+			this.notificationSender.send(Group.ADMINISTRATOR, "Breakdown import has been completed",
+					breakdownCSVRows.size() + " breakdowns were created", Category.BREAKDOWN);
 
 			csvParser.close();
 		} catch (IOException e) {

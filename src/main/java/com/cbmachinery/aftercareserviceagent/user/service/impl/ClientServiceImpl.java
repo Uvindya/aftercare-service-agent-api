@@ -14,6 +14,7 @@ import java.util.stream.StreamSupport;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,9 @@ import com.cbmachinery.aftercareserviceagent.auth.model.UserCredential;
 import com.cbmachinery.aftercareserviceagent.auth.model.enums.Role;
 import com.cbmachinery.aftercareserviceagent.auth.service.UserCredentialService;
 import com.cbmachinery.aftercareserviceagent.common.exception.ResourceNotFoundException;
+import com.cbmachinery.aftercareserviceagent.notification.model.Category;
+import com.cbmachinery.aftercareserviceagent.notification.model.Group;
+import com.cbmachinery.aftercareserviceagent.notification.sender.NotificationSender;
 import com.cbmachinery.aftercareserviceagent.user.dto.BasicUserOutputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.ClientInputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.ClientOutputDTO;
@@ -37,12 +41,14 @@ public class ClientServiceImpl implements ClientService {
 
 	private final UserCredentialService userCredentialService;
 	private final ClientRepository clientRepository;
+	private final NotificationSender notificationSender;
 
-	public ClientServiceImpl(final UserCredentialService userCredentialService,
-			final ClientRepository clientRepository) {
+	public ClientServiceImpl(final UserCredentialService userCredentialService, final ClientRepository clientRepository,
+			@Lazy final NotificationSender notificationSender) {
 		super();
 		this.userCredentialService = userCredentialService;
 		this.clientRepository = clientRepository;
+		this.notificationSender = notificationSender;
 	}
 
 	@Override
@@ -120,6 +126,9 @@ public class ClientServiceImpl implements ClientService {
 			}
 
 			clientInputs.stream().forEach(ci -> save(ci));
+
+			this.notificationSender.send(Group.ADMINISTRATOR, "Clients import has been completed",
+					clientInputs.size() + " clients were created", Category.CLIENTS);
 
 			csvParser.close();
 		} catch (IOException e) {

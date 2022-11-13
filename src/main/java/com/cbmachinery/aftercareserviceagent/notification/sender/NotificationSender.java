@@ -29,8 +29,9 @@ public class NotificationSender {
 	}
 
 	@Async
-	public void send(long userId, String title, String message, Category category) {
-
+	public void send(String owner, String title, String message, Category category) {
+		this.notificationService.save(List.of(Notification.builder().title(title).category(category).isRead(false)
+				.message(message).owner(owner).build()));
 	}
 
 	@Async
