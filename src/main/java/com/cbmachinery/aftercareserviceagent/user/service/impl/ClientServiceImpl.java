@@ -25,6 +25,8 @@ import com.cbmachinery.aftercareserviceagent.auth.model.UserCredential;
 import com.cbmachinery.aftercareserviceagent.auth.model.enums.Role;
 import com.cbmachinery.aftercareserviceagent.auth.service.UserCredentialService;
 import com.cbmachinery.aftercareserviceagent.common.exception.ResourceNotFoundException;
+import com.cbmachinery.aftercareserviceagent.email.dto.Email;
+import com.cbmachinery.aftercareserviceagent.email.service.EmailService;
 import com.cbmachinery.aftercareserviceagent.notification.model.Category;
 import com.cbmachinery.aftercareserviceagent.notification.model.Group;
 import com.cbmachinery.aftercareserviceagent.notification.sender.NotificationSender;
@@ -42,13 +44,15 @@ public class ClientServiceImpl implements ClientService {
 	private final UserCredentialService userCredentialService;
 	private final ClientRepository clientRepository;
 	private final NotificationSender notificationSender;
+	private final EmailService emailService;
 
 	public ClientServiceImpl(final UserCredentialService userCredentialService, final ClientRepository clientRepository,
-			@Lazy final NotificationSender notificationSender) {
+			@Lazy final NotificationSender notificationSender, final EmailService emailService) {
 		super();
 		this.userCredentialService = userCredentialService;
 		this.clientRepository = clientRepository;
 		this.notificationSender = notificationSender;
+		this.emailService = emailService;
 	}
 
 	@Override
@@ -61,7 +65,19 @@ public class ClientServiceImpl implements ClientService {
 				.gender(clientInput.getGender()).lastName(clientInput.getLastName())
 				.primaryPhoneNo(clientInput.getPrimaryPhoneNo()).secondaryPhoneNo(clientInput.getSecondaryPhoneNo())
 				.erpId(clientInput.getErpId()).userCredential(userCredential).build();
-		return clientRepository.save(clientToSave).viewAsBasicDTO();
+		Client savedClient = clientRepository.save(clientToSave);
+
+		emailService.sendHtmlEmail(Email.builder().to(clientInput.getEmail())
+				.subject("Your account created on CB Aftercare App")
+				.body("<html><body>" + "<h3>Dear " + clientInput.getFirstName() + " " + clientInput.getLastName()
+						+ "</h3>"
+						+ "<p>We have created an account for you on CB Aftercare Mobile Application to manage your product's Maintainances and breakdowns. Please refer below details to login to this App.</p>"
+						+ "<h4>Download URL : <a href=''>Android</a></h4>" + "<h4>Username : " + clientInput.getEmail()
+						+ "</h4>" + "<h4>Password : " + clientInput.getPassword() + " </h4>" + "<p>Thank you</p>"
+						+ "</body>" + "</html>")
+				.build());
+
+		return savedClient.viewAsBasicDTO();
 	}
 
 	@Override
