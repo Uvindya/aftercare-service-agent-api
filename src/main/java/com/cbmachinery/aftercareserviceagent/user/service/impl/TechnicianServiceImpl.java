@@ -14,6 +14,7 @@ import java.util.stream.StreamSupport;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +26,8 @@ import com.cbmachinery.aftercareserviceagent.auth.model.UserCredential;
 import com.cbmachinery.aftercareserviceagent.auth.model.enums.Role;
 import com.cbmachinery.aftercareserviceagent.auth.service.UserCredentialService;
 import com.cbmachinery.aftercareserviceagent.common.exception.ResourceNotFoundException;
+import com.cbmachinery.aftercareserviceagent.email.dto.Email;
+import com.cbmachinery.aftercareserviceagent.email.service.EmailService;
 import com.cbmachinery.aftercareserviceagent.notification.model.Category;
 import com.cbmachinery.aftercareserviceagent.notification.model.Group;
 import com.cbmachinery.aftercareserviceagent.notification.sender.NotificationSender;
@@ -42,13 +45,16 @@ public class TechnicianServiceImpl implements TechnicianService {
 	private final UserCredentialService userCredentialService;
 	private final TechnicianRepository technicianRepository;
 	private final NotificationSender notificationSender;
+	private final EmailService emailService;
 
 	public TechnicianServiceImpl(final UserCredentialService userCredentialService,
-			final TechnicianRepository technicianRepository, @Lazy final NotificationSender notificationSender) {
+			final TechnicianRepository technicianRepository, @Lazy final NotificationSender notificationSender,
+			final EmailService emailService) {
 		super();
 		this.userCredentialService = userCredentialService;
 		this.technicianRepository = technicianRepository;
 		this.notificationSender = notificationSender;
+		this.emailService = emailService;
 	}
 
 	@Override
@@ -61,7 +67,19 @@ public class TechnicianServiceImpl implements TechnicianService {
 				.gender(technicianInput.getGender()).lastName(technicianInput.getLastName())
 				.erpId(technicianInput.getErpId()).primaryPhoneNo(technicianInput.getPrimaryPhoneNo())
 				.userCredential(userCredential).build();
-		return technicianRepository.save(technicianToSave).viewAsBasicDTO();
+		Technician savedTechnician = technicianRepository.save(technicianToSave);
+
+		emailService.sendHtmlEmail(Email.builder().to(technicianInput.getEmail())
+				.subject("Your account created on CB Aftercare App")
+				.body("<html><body>" + "<h3>Dear " + technicianInput.getFirstName() + " "
+						+ technicianInput.getLastName() + "</h3>"
+						+ "<p>We have created an account for you on CB Aftercare Mobile Application to manage your product's Maintainances and breakdowns. Please refer below details to login to this App.</p>"
+						+ "<h4>Download URL : <a href=''>Android</a></h4>" + "<h4>Username : "
+						+ technicianInput.getEmail() + "</h4>" + "<h4>Password : " + technicianInput.getPassword()
+						+ " </h4>" + "<p>Thank you</p>" + "</body>" + "</html>")
+				.build());
+
+		return savedTechnician.viewAsBasicDTO();
 	}
 
 	@Override
@@ -98,8 +116,9 @@ public class TechnicianServiceImpl implements TechnicianService {
 			for (CSVRecord cr : csvRecords) {
 				if (row != 0) {
 					usernames.add(cr.get(2));
+					String pwd = RandomStringUtils.random(10, true, true);
 					technicianInputs.add(new TechnicianInputDTO(cr.get(0), cr.get(1), cr.get(2), cr.get(3),
-							Gender.valueOf(cr.get(5)), "Zaq1xsw2@", Integer.valueOf(cr.get(6)), cr.get(4)));
+							Gender.valueOf(cr.get(5)), pwd, Integer.valueOf(cr.get(6)), cr.get(4)));
 				}
 
 				row++;
@@ -112,7 +131,17 @@ public class TechnicianServiceImpl implements TechnicianService {
 				throw new IllegalArgumentException("Duplicate Usernames inside the file");
 			}
 
-			technicianInputs.stream().forEach(ti -> save(ti));
+			technicianInputs.stream().forEach(ti -> {
+				save(ti);
+				emailService.sendHtmlEmail(Email.builder().to(ti.getEmail())
+						.subject("Your account created on CB Aftercare App")
+						.body("<html><body>" + "<h3>Dear " + ti.getFirstName() + " " + ti.getLastName() + "</h3>"
+								+ "<p>We have created an account for you on CB Aftercare Mobile Application to manage your product's Maintainances and breakdowns. Please refer below details to login to this App.</p>"
+								+ "<h4>Download URL : <a href=''>Android</a></h4>" + "<h4>Username : " + ti.getEmail()
+								+ "</h4>" + "<h4>Password : " + ti.getPassword() + " </h4>" + "<p>Thank you</p>"
+								+ "</body>" + "</html>")
+						.build());
+			});
 
 			this.notificationSender.send(Group.ADMINISTRATOR, "Technicians import has been completed",
 					technicianInputs.size() + " technicians were created", Category.TECHNICIAN);

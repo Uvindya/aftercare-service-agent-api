@@ -14,6 +14,7 @@ import java.util.stream.StreamSupport;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -126,9 +127,10 @@ public class ClientServiceImpl implements ClientService {
 			for (CSVRecord cr : csvRecords) {
 				if (row != 0) {
 					usernames.add(cr.get(2));
+					String pwd = RandomStringUtils.random(10, true, true);
 					clientInputs.add(
 							new ClientInputDTO(cr.get(0), cr.get(1), cr.get(2), cr.get(3), Gender.valueOf(cr.get(6)),
-									"Zaq1xsw2@", cr.get(7), cr.get(8), cr.get(9), cr.get(10), cr.get(4), cr.get(5)));
+									pwd, cr.get(7), cr.get(8), cr.get(9), cr.get(10), cr.get(4), cr.get(5)));
 				}
 
 				row++;
@@ -141,7 +143,17 @@ public class ClientServiceImpl implements ClientService {
 				throw new IllegalArgumentException("Duplicate Usernames inside the file");
 			}
 
-			clientInputs.stream().forEach(ci -> save(ci));
+			clientInputs.stream().forEach(ci -> {
+				save(ci);
+				emailService.sendHtmlEmail(Email.builder().to(ci.getEmail())
+						.subject("Your account created on CB Aftercare App")
+						.body("<html><body>" + "<h3>Dear " + ci.getFirstName() + " " + ci.getLastName() + "</h3>"
+								+ "<p>We have created an account for you on CB Aftercare Mobile Application to manage your product's Maintainances and breakdowns. Please refer below details to login to this App.</p>"
+								+ "<h4>Download URL : <a href=''>Android</a></h4>" + "<h4>Username : " + ci.getEmail()
+								+ "</h4>" + "<h4>Password : " + ci.getPassword() + " </h4>" + "<p>Thank you</p>"
+								+ "</body>" + "</html>")
+						.build());
+			});
 
 			this.notificationSender.send(Group.ADMINISTRATOR, "Clients import has been completed",
 					clientInputs.size() + " clients were created", Category.CLIENTS);
