@@ -23,4 +23,8 @@ public class DateTimeUtil {
 		return LocalDate.parse(date, DATE_FORMATTER);
 	}
 
+	public static String fomatToLongDate(LocalDate date) {
+		return date.format(DATE_FORMATTER);
+	}
+
 }

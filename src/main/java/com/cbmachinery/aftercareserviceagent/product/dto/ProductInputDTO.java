@@ -1,8 +1,10 @@
 package com.cbmachinery.aftercareserviceagent.product.dto;
 
+import java.time.LocalDate;
 import java.time.Year;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;
@@ -22,13 +24,19 @@ public class ProductInputDTO {
 	private final Year manufactureYear;
 	private final String serialNumber;
 
+	@JsonFormat(pattern = "yyyy-MM-dd")
+	private final LocalDate purchasedAt;
+
+	private final boolean migrated;
+
 	@JsonCreator
 	public ProductInputDTO(@JsonProperty("name") String name, @JsonProperty("warrentyPeriod") int warrentyPeriod,
 			@JsonProperty("maintainnanceInterval") int maintainnanceInterval, @JsonProperty("erpId") String erpId,
 			@JsonProperty("clientId") long clientId, @JsonProperty("description") String description,
 			@JsonProperty("countryOfOrigin") String countryOfOrigin, @JsonProperty("make") String make,
 			@JsonProperty("model") String model, @JsonProperty("manufactureYear") Year manufactureYear,
-			@JsonProperty("serialNumber") String serialNumber) {
+			@JsonProperty("serialNumber") String serialNumber, @JsonProperty("purchasedAt") LocalDate purchasedAt,
+			@JsonProperty("migrated") boolean migrated) {
 		super();
 		this.name = name;
 		this.warrentyPeriod = warrentyPeriod;
@@ -41,6 +49,8 @@ public class ProductInputDTO {
 		this.model = model;
 		this.manufactureYear = manufactureYear;
 		this.serialNumber = serialNumber;
+		this.purchasedAt = purchasedAt;
+		this.migrated = migrated;
 	}
 
 }

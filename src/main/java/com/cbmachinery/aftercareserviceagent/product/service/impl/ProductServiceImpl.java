@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.cbmachinery.aftercareserviceagent.common.exception.ResourceNotFoundException;
+import com.cbmachinery.aftercareserviceagent.common.util.DateTimeUtil;
 import com.cbmachinery.aftercareserviceagent.notification.model.Category;
 import com.cbmachinery.aftercareserviceagent.notification.model.Group;
 import com.cbmachinery.aftercareserviceagent.notification.sender.NotificationSender;
@@ -72,12 +73,14 @@ public class ProductServiceImpl implements ProductService {
 				.description(productInput.getDescription()).countryOfOrigin(productInput.getCountryOfOrigin())
 				.make(productInput.getMake()).model(productInput.getModel())
 				.manufactureYear(productInput.getManufactureYear()).serialNumber(productInput.getSerialNumber())
-				.warrentyPeriod(productInput.getWarrentyPeriod()).build();
+				.purchasedAt(productInput.getPurchasedAt()).warrentyPeriod(productInput.getWarrentyPeriod()).build();
 
 		Product savedProduct = this.productRepository.save(productToSave);
 
-		productMaintainanceUtil.scheduleMaintainances(savedProduct.getId(), savedProduct.getCreatedAt(),
-				savedProduct.getWarrentyPeriod(), savedProduct.getMaintainnanceInterval());
+		if (!productInput.isMigrated()) {
+			productMaintainanceUtil.scheduleMaintainances(savedProduct.getId(), savedProduct.getPurchasedAt(),
+					savedProduct.getWarrentyPeriod(), savedProduct.getMaintainnanceInterval());
+		}
 
 		return savedProduct.viewAsBasicDTO();
 	}
@@ -119,7 +122,8 @@ public class ProductServiceImpl implements ProductService {
 					Client client = this.clientService.findByUsername(cr.get(4));
 					productsInputs.add(new ProductInputDTO(cr.get(0), Integer.parseInt(cr.get(1)),
 							Integer.parseInt(cr.get(2)), cr.get(3), client.getId(), cr.get(5), cr.get(6), cr.get(7),
-							cr.get(8), Year.of(Integer.parseInt(cr.get(9))), cr.get(10)));
+							cr.get(8), Year.of(Integer.parseInt(cr.get(9))), cr.get(10),
+							DateTimeUtil.fomatToLongDate(cr.get(11)), cr.get(12).equals("1") ? true : false));
 				}
 
 				row++;

@@ -131,17 +131,7 @@ public class TechnicianServiceImpl implements TechnicianService {
 				throw new IllegalArgumentException("Duplicate Usernames inside the file");
 			}
 
-			technicianInputs.stream().forEach(ti -> {
-				save(ti);
-				emailService.sendHtmlEmail(Email.builder().to(ti.getEmail())
-						.subject("Your account created on CB Aftercare App")
-						.body("<html><body>" + "<h3>Dear " + ti.getFirstName() + " " + ti.getLastName() + "</h3>"
-								+ "<p>We have created an account for you on CB Aftercare Mobile Application to manage your product's Maintainances and breakdowns. Please refer below details to login to this App.</p>"
-								+ "<h4>Download URL : <a href=''>Android</a></h4>" + "<h4>Username : " + ti.getEmail()
-								+ "</h4>" + "<h4>Password : " + ti.getPassword() + " </h4>" + "<p>Thank you</p>"
-								+ "</body>" + "</html>")
-						.build());
-			});
+			technicianInputs.stream().forEach(ti -> save(ti));
 
 			this.notificationSender.send(Group.ADMINISTRATOR, "Technicians import has been completed",
 					technicianInputs.size() + " technicians were created", Category.TECHNICIAN);

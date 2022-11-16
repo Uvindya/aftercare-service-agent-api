@@ -1,5 +1,6 @@
 package com.cbmachinery.aftercareserviceagent.product.model;
 
+import java.time.LocalDate;
 import java.time.Year;
 import java.util.Set;
 
@@ -57,6 +58,7 @@ public class Product extends Auditable<String> {
 	private String model;
 	private Year manufactureYear;
 	private String serialNumber;
+	private LocalDate purchasedAt;
 
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)
 	@JoinColumn(name = "client_id", nullable = false)
@@ -79,7 +81,7 @@ public class Product extends Auditable<String> {
 		return new ProductOutputDTO(id, DateTimeUtil.fomatToLongDateTime(createdAt), createdBy,
 				DateTimeUtil.fomatToLongDateTime(modifiedAt), modifiedBy, name, warrentyPeriod, maintainnanceInterval,
 				erpId, client.viewAsBasicDTO(), description, countryOfOrigin, make, model, manufactureYear,
-				serialNumber);
+				serialNumber, DateTimeUtil.fomatToLongDate(purchasedAt));
 	}
 
 }

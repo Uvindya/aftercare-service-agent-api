@@ -1,7 +1,6 @@
 package com.cbmachinery.aftercareserviceagent.util;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.stream.IntStream;
 
 import org.springframework.scheduling.annotation.Async;
@@ -22,12 +21,12 @@ public class ProductMaintainanceUtil {
 	}
 
 	@Async
-	public void scheduleMaintainances(long productId, LocalDateTime purchasedAt, int warrentyPeriod,
+	public void scheduleMaintainances(long productId, LocalDate purchasedAt, int warrentyPeriod,
 			int maintainnanceInterval) {
 		int numOfMaintainances = warrentyPeriod / maintainnanceInterval;
 
 		IntStream.range(1, numOfMaintainances + 1).boxed().forEach(i -> {
-			LocalDate scheduledAt = purchasedAt.plusMonths(i * maintainnanceInterval).toLocalDate();
+			LocalDate scheduledAt = purchasedAt.plusMonths(i * maintainnanceInterval);
 			MaintainanceInputDTO maintainanceInput = new MaintainanceInputDTO(
 					String.format("Regular Maintainance %d", i), scheduledAt, productId, MaintainanceType.REGULAR);
 			maintainanceService.save(maintainanceInput);

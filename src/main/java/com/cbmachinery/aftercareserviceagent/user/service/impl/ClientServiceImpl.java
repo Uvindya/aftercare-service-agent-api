@@ -143,17 +143,7 @@ public class ClientServiceImpl implements ClientService {
 				throw new IllegalArgumentException("Duplicate Usernames inside the file");
 			}
 
-			clientInputs.stream().forEach(ci -> {
-				save(ci);
-				emailService.sendHtmlEmail(Email.builder().to(ci.getEmail())
-						.subject("Your account created on CB Aftercare App")
-						.body("<html><body>" + "<h3>Dear " + ci.getFirstName() + " " + ci.getLastName() + "</h3>"
-								+ "<p>We have created an account for you on CB Aftercare Mobile Application to manage your product's Maintainances and breakdowns. Please refer below details to login to this App.</p>"
-								+ "<h4>Download URL : <a href=''>Android</a></h4>" + "<h4>Username : " + ci.getEmail()
-								+ "</h4>" + "<h4>Password : " + ci.getPassword() + " </h4>" + "<p>Thank you</p>"
-								+ "</body>" + "</html>")
-						.build());
-			});
+			clientInputs.stream().forEach(ci -> save(ci));
 
 			this.notificationSender.send(Group.ADMINISTRATOR, "Clients import has been completed",
 					clientInputs.size() + " clients were created", Category.CLIENTS);

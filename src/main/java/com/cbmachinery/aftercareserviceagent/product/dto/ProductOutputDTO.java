@@ -27,5 +27,6 @@ public class ProductOutputDTO {
 	private final String model;
 	private final Year manufactureYear;
 	private final String serialNumber;
+	private final String purchasedAt;
 
 }
