@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.cbmachinery.aftercareserviceagent.user.dto.BasicUserOutputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.ClientInputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.ClientOutputDTO;
+import com.cbmachinery.aftercareserviceagent.user.dto.ClientUpdateDTO;
 import com.cbmachinery.aftercareserviceagent.user.service.ClientService;
 
 @RestController
@@ -36,6 +38,12 @@ public class ClientController {
 	@PostMapping
 	public ResponseEntity<BasicUserOutputDTO> saveClient(@Valid @RequestBody ClientInputDTO clientInput) {
 		return new ResponseEntity<>(clientService.save(clientInput), HttpStatus.CREATED);
+	}
+
+	@PutMapping("/{id}")
+	public ResponseEntity<BasicUserOutputDTO> updateClient(@PathVariable long id,
+			@Valid @RequestBody ClientUpdateDTO clientInput) {
+		return ResponseEntity.ok(clientService.update(id, clientInput));
 	}
 
 	@PostMapping("/import")

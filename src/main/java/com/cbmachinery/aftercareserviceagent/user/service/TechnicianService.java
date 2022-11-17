@@ -9,10 +9,13 @@ import org.springframework.web.multipart.MultipartFile;
 import com.cbmachinery.aftercareserviceagent.user.dto.BasicUserOutputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.TechnicianInputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.TechnicianOutputDTO;
+import com.cbmachinery.aftercareserviceagent.user.dto.TechnicianUpdateDTO;
 import com.cbmachinery.aftercareserviceagent.user.model.Technician;
 
 public interface TechnicianService {
 	BasicUserOutputDTO save(TechnicianInputDTO technicianInput);
+
+	BasicUserOutputDTO update(long id, TechnicianUpdateDTO technicianInput);
 
 	Page<BasicUserOutputDTO> findAll(Pageable pageable, String searchTerm);
 

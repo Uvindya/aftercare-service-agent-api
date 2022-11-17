@@ -144,8 +144,8 @@ public class BreakdownServiceImpl implements BreakdownService {
 
 	@Override
 	@Transactional
-	public BreakdownOutputDTO changeStatus(long id, BreakdownStatus status) {
-		breakdownRepository.changeStatus(id, status, LocalDateTime.now());
+	public BreakdownOutputDTO accept(long id) {
+		breakdownRepository.changeStatus(id, BreakdownStatus.COMPLETED, LocalDateTime.now());
 		Breakdown updatedBreakdown = findByIdAsDomain(id);
 
 		this.notificationSender.send(updatedBreakdown.getTechnician().getUserCredential().getUsername(),
@@ -159,8 +159,8 @@ public class BreakdownServiceImpl implements BreakdownService {
 
 	@Override
 	@Transactional
-	public BreakdownOutputDTO start(long id, BreakdownStatus status) {
-		breakdownRepository.start(id, status, LocalDateTime.now());
+	public BreakdownOutputDTO start(long id) {
+		breakdownRepository.start(id, BreakdownStatus.IN_PROGRESS, LocalDateTime.now());
 		Breakdown updatedBreakdown = findByIdAsDomain(id);
 
 		this.notificationSender.send(Group.ADMINISTRATOR, "Technician has started to work on Breakdown Task",
@@ -175,8 +175,8 @@ public class BreakdownServiceImpl implements BreakdownService {
 
 	@Override
 	@Transactional
-	public BreakdownOutputDTO complete(long id, BreakdownStatus status) {
-		breakdownRepository.complete(id, status, LocalDateTime.now());
+	public BreakdownOutputDTO complete(long id) {
+		breakdownRepository.complete(id, BreakdownStatus.NEEDS_CLIENTS_ACCEPTENCE, LocalDateTime.now());
 		Breakdown updatedBreakdown = findByIdAsDomain(id);
 
 		this.notificationSender.send(Group.ADMINISTRATOR, "Technician has completed the work on Breakdown Task",
@@ -301,5 +301,17 @@ public class BreakdownServiceImpl implements BreakdownService {
 		} catch (IOException e) {
 			throw new IllegalArgumentException("Error in Client import !!!");
 		}
+	}
+
+	@Override
+	@Transactional
+	public BreakdownOutputDTO cancel(long id) {
+		breakdownRepository.complete(id, BreakdownStatus.CANCELLED, LocalDateTime.now());
+		Breakdown updatedBreakdown = findByIdAsDomain(id);
+
+		this.notificationSender.send(Group.ADMINISTRATOR, "Client has cancelled the work on Breakdown Task",
+				"ID - " + updatedBreakdown.getId(), Category.BREAKDOWN);
+
+		return updatedBreakdown.viewAsDTO();
 	}
 }

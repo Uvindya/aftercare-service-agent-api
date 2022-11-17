@@ -14,7 +14,6 @@ import com.cbmachinery.aftercareserviceagent.task.dto.BreakdownNotesInputDTO;
 import com.cbmachinery.aftercareserviceagent.task.dto.BreakdownOutputDTO;
 import com.cbmachinery.aftercareserviceagent.task.dto.TechnicianTaskAssignmentDTO;
 import com.cbmachinery.aftercareserviceagent.task.model.Breakdown;
-import com.cbmachinery.aftercareserviceagent.task.model.enums.BreakdownStatus;
 
 public interface BreakdownService {
 	BasicBreakdownOutputDTO save(BreakdownInputDTO breakdownInput);
@@ -29,11 +28,13 @@ public interface BreakdownService {
 
 	List<BasicBreakdownOutputDTO> findMyOwnership(String username);
 
-	BreakdownOutputDTO changeStatus(long id, BreakdownStatus status);
+	BreakdownOutputDTO accept(long id);
 
-	BreakdownOutputDTO start(long id, BreakdownStatus status);
+	BreakdownOutputDTO start(long id);
 
-	BreakdownOutputDTO complete(long id, BreakdownStatus status);
+	BreakdownOutputDTO complete(long id);
+
+	BreakdownOutputDTO cancel(long id);
 
 	BreakdownOutputDTO addNotes(long id, BreakdownNotesInputDTO notesInput);
 

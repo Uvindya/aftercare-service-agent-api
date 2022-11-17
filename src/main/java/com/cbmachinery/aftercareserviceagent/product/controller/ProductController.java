@@ -12,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.cbmachinery.aftercareserviceagent.product.dto.BasicProductOutputDTO;
 import com.cbmachinery.aftercareserviceagent.product.dto.ProductInputDTO;
 import com.cbmachinery.aftercareserviceagent.product.dto.ProductOutputDTO;
+import com.cbmachinery.aftercareserviceagent.product.dto.ProductUpdateDTO;
 import com.cbmachinery.aftercareserviceagent.product.service.ProductService;
 
 @RestController
@@ -37,6 +39,12 @@ public class ProductController {
 	@PostMapping
 	public ResponseEntity<BasicProductOutputDTO> save(@Valid @RequestBody ProductInputDTO productInput) {
 		return new ResponseEntity<>(productService.save(productInput), HttpStatus.CREATED);
+	}
+
+	@PutMapping("/{id}")
+	public ResponseEntity<BasicProductOutputDTO> update(@PathVariable long id,
+			@Valid @RequestBody ProductUpdateDTO productInput) {
+		return ResponseEntity.ok(productService.update(id, productInput));
 	}
 
 	@GetMapping

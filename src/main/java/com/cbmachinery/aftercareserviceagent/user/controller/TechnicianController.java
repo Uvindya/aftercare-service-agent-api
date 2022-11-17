@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.cbmachinery.aftercareserviceagent.user.dto.BasicUserOutputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.TechnicianInputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.TechnicianOutputDTO;
+import com.cbmachinery.aftercareserviceagent.user.dto.TechnicianUpdateDTO;
 import com.cbmachinery.aftercareserviceagent.user.service.TechnicianService;
 
 @RestController
@@ -36,6 +38,12 @@ public class TechnicianController {
 	@PostMapping
 	public ResponseEntity<BasicUserOutputDTO> save(@Valid @RequestBody TechnicianInputDTO technicianInput) {
 		return new ResponseEntity<>(technicianService.save(technicianInput), HttpStatus.CREATED);
+	}
+
+	@PutMapping("/{id}")
+	public ResponseEntity<BasicUserOutputDTO> update(@PathVariable long id,
+			@Valid @RequestBody TechnicianUpdateDTO technicianInput) {
+		return ResponseEntity.ok(technicianService.update(id, technicianInput));
 	}
 
 	@PostMapping("/import")

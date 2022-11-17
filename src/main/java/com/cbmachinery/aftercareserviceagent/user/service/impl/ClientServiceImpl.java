@@ -34,6 +34,7 @@ import com.cbmachinery.aftercareserviceagent.notification.sender.NotificationSen
 import com.cbmachinery.aftercareserviceagent.user.dto.BasicUserOutputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.ClientInputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.ClientOutputDTO;
+import com.cbmachinery.aftercareserviceagent.user.dto.ClientUpdateDTO;
 import com.cbmachinery.aftercareserviceagent.user.model.Client;
 import com.cbmachinery.aftercareserviceagent.user.model.enums.Gender;
 import com.cbmachinery.aftercareserviceagent.user.repository.ClientRepository;
@@ -163,6 +164,20 @@ public class ClientServiceImpl implements ClientService {
 	@Override
 	public long count() {
 		return this.clientRepository.count();
+	}
+
+	@Override
+	public BasicUserOutputDTO update(long id, ClientUpdateDTO clientInput) {
+		Client exitingClient = findById(id);
+		Client clientToUpdate = Client.builder().id(exitingClient.getId()).email(exitingClient.getEmail())
+				.firstName(clientInput.getFirstName()).gender(clientInput.getGender())
+				.lastName(clientInput.getLastName()).erpId(exitingClient.getErpId())
+				.userCredential(exitingClient.getUserCredential()).addressLine1(clientInput.getAddressLine1())
+				.addressLine2(clientInput.getAddressLine2()).primaryPhoneNo(clientInput.getPrimaryPhoneNo())
+				.secondaryPhoneNo(clientInput.getSecondaryPhoneNo()).createdAt(exitingClient.getCreatedAt())
+				.createdBy(exitingClient.getCreatedBy()).city(clientInput.getCity()).district(clientInput.getDistrict())
+				.build();
+		return this.clientRepository.save(clientToUpdate).viewAsBasicDTO();
 	}
 
 }

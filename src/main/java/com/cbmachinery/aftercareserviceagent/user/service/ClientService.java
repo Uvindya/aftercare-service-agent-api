@@ -9,10 +9,13 @@ import org.springframework.web.multipart.MultipartFile;
 import com.cbmachinery.aftercareserviceagent.user.dto.BasicUserOutputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.ClientInputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.ClientOutputDTO;
+import com.cbmachinery.aftercareserviceagent.user.dto.ClientUpdateDTO;
 import com.cbmachinery.aftercareserviceagent.user.model.Client;
 
 public interface ClientService {
 	BasicUserOutputDTO save(ClientInputDTO clientInput);
+
+	BasicUserOutputDTO update(long id, ClientUpdateDTO clientInput);
 
 	Page<BasicUserOutputDTO> findAll(Pageable pageable, String searchTerm);
 

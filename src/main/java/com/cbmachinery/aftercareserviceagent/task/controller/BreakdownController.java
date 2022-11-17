@@ -24,7 +24,6 @@ import com.cbmachinery.aftercareserviceagent.task.dto.BreakdownInputDTO;
 import com.cbmachinery.aftercareserviceagent.task.dto.BreakdownNotesInputDTO;
 import com.cbmachinery.aftercareserviceagent.task.dto.BreakdownOutputDTO;
 import com.cbmachinery.aftercareserviceagent.task.dto.TechnicianTaskAssignmentDTO;
-import com.cbmachinery.aftercareserviceagent.task.model.enums.BreakdownStatus;
 import com.cbmachinery.aftercareserviceagent.task.service.BreakdownService;
 
 @RestController
@@ -61,17 +60,22 @@ public class BreakdownController {
 
 	@PutMapping("/{id}/start")
 	public ResponseEntity<BreakdownOutputDTO> startMaintainance(@PathVariable long id) {
-		return ResponseEntity.ok(breakdownService.start(id, BreakdownStatus.IN_PROGRESS));
+		return ResponseEntity.ok(breakdownService.start(id));
 	}
 
 	@PutMapping("/{id}/complete")
 	public ResponseEntity<BreakdownOutputDTO> completeMaintainance(@PathVariable long id) {
-		return ResponseEntity.ok(breakdownService.complete(id, BreakdownStatus.NEEDS_CLIENTS_ACCEPTENCE));
+		return ResponseEntity.ok(breakdownService.complete(id));
 	}
 
 	@PutMapping("/{id}/accept")
 	public ResponseEntity<BreakdownOutputDTO> acceptMaintainance(@PathVariable long id) {
-		return ResponseEntity.ok(breakdownService.changeStatus(id, BreakdownStatus.COMPLETED));
+		return ResponseEntity.ok(breakdownService.accept(id));
+	}
+
+	@PutMapping("/{id}/cancel")
+	public ResponseEntity<BreakdownOutputDTO> cancelMaintainance(@PathVariable long id) {
+		return ResponseEntity.ok(breakdownService.cancel(id));
 	}
 
 	@PutMapping("/{id}/notes")

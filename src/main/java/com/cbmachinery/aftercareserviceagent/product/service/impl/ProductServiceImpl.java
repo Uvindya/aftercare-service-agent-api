@@ -28,6 +28,7 @@ import com.cbmachinery.aftercareserviceagent.notification.sender.NotificationSen
 import com.cbmachinery.aftercareserviceagent.product.dto.BasicProductOutputDTO;
 import com.cbmachinery.aftercareserviceagent.product.dto.ProductInputDTO;
 import com.cbmachinery.aftercareserviceagent.product.dto.ProductOutputDTO;
+import com.cbmachinery.aftercareserviceagent.product.dto.ProductUpdateDTO;
 import com.cbmachinery.aftercareserviceagent.product.model.Product;
 import com.cbmachinery.aftercareserviceagent.product.repository.ProductRepository;
 import com.cbmachinery.aftercareserviceagent.product.service.ProductService;
@@ -161,6 +162,21 @@ public class ProductServiceImpl implements ProductService {
 	public Product findByErpId(String erpId) {
 		return productRepository.findByErpId(erpId)
 				.orElseThrow(() -> new ResourceNotFoundException("No Product found for this ERP ID"));
+	}
+
+	@Override
+	public BasicProductOutputDTO update(long id, ProductUpdateDTO productInput) {
+		Product existingProduct = this.findById(id);
+		Product productToUpdate = Product.builder().id(existingProduct.getId()).client(existingProduct.getClient())
+				.erpId(existingProduct.getErpId()).maintainnanceInterval(existingProduct.getMaintainnanceInterval())
+				.name(productInput.getName()).description(productInput.getDescription())
+				.countryOfOrigin(productInput.getCountryOfOrigin()).make(productInput.getMake())
+				.model(productInput.getModel()).manufactureYear(productInput.getManufactureYear())
+				.serialNumber(existingProduct.getSerialNumber()).purchasedAt(existingProduct.getPurchasedAt())
+				.warrentyPeriod(existingProduct.getWarrentyPeriod()).createdAt(existingProduct.getCreatedAt())
+				.createdBy(existingProduct.getCreatedBy()).breakdowns(existingProduct.getBreakdowns())
+				.maintainances(existingProduct.getMaintainances()).build();
+		return this.productRepository.save(productToUpdate).viewAsBasicDTO();
 	}
 
 }

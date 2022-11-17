@@ -34,6 +34,7 @@ import com.cbmachinery.aftercareserviceagent.notification.sender.NotificationSen
 import com.cbmachinery.aftercareserviceagent.user.dto.BasicUserOutputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.TechnicianInputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.TechnicianOutputDTO;
+import com.cbmachinery.aftercareserviceagent.user.dto.TechnicianUpdateDTO;
 import com.cbmachinery.aftercareserviceagent.user.model.Technician;
 import com.cbmachinery.aftercareserviceagent.user.model.enums.Gender;
 import com.cbmachinery.aftercareserviceagent.user.repository.TechnicianRepository;
@@ -170,6 +171,22 @@ public class TechnicianServiceImpl implements TechnicianService {
 	public Technician findByErpId(String erpId) {
 		return technicianRepository.findByErpId(erpId)
 				.orElseThrow(() -> new ResourceNotFoundException("No Technician found for this ERP ID"));
+	}
+
+	@Override
+	public BasicUserOutputDTO update(long id, TechnicianUpdateDTO technicianInput) {
+		Technician existingTechnician = this.findByIdAsRaw(id);
+		Technician technicianToUpdate = Technician.builder().id(existingTechnician.getId())
+				.yearOfExperience(technicianInput.getYearOfExperience()).email(existingTechnician.getEmail())
+				.firstName(technicianInput.getFirstName()).gender(technicianInput.getGender())
+				.lastName(technicianInput.getLastName()).erpId(existingTechnician.getErpId())
+				.primaryPhoneNo(technicianInput.getPrimaryPhoneNo())
+				.assignedBreakdowns(existingTechnician.getAssignedBreakdowns())
+				.assignedMaintainances(existingTechnician.getAssignedMaintainances())
+				.userCredential(existingTechnician.getUserCredential()).createdAt(existingTechnician.getCreatedAt())
+				.createdBy(existingTechnician.getCreatedBy()).build();
+
+		return technicianRepository.save(technicianToUpdate).viewAsBasicDTO();
 	}
 
 }
