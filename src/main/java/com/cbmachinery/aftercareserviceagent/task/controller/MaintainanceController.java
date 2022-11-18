@@ -21,9 +21,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.cbmachinery.aftercareserviceagent.task.dto.BasicMaintainanceOutputDTO;
 import com.cbmachinery.aftercareserviceagent.task.dto.MaintainanceOutputDTO;
+import com.cbmachinery.aftercareserviceagent.task.dto.MaintainanceReScheduleInputDTO;
 import com.cbmachinery.aftercareserviceagent.task.dto.NotesInputDTO;
 import com.cbmachinery.aftercareserviceagent.task.dto.TechnicianTaskAssignmentDTO;
-import com.cbmachinery.aftercareserviceagent.task.model.enums.MaintainanceStatus;
 import com.cbmachinery.aftercareserviceagent.task.service.MaintainanceService;
 
 @RestController
@@ -56,28 +56,39 @@ public class MaintainanceController {
 
 	@PutMapping("/{id}/start")
 	public ResponseEntity<MaintainanceOutputDTO> startMaintainance(@PathVariable long id) {
-		return ResponseEntity.ok(maintainanceService.start(id, MaintainanceStatus.IN_PROGRESS));
+		return ResponseEntity.ok(maintainanceService.start(id));
 	}
 
 	@PutMapping("/{id}/complete")
 	public ResponseEntity<MaintainanceOutputDTO> completeMaintainance(@PathVariable long id) {
-		return ResponseEntity.ok(maintainanceService.complete(id, MaintainanceStatus.NEEDS_CLIENTS_ACCEPTENCE));
+		return ResponseEntity.ok(maintainanceService.complete(id));
 	}
 
 	@PutMapping("/{id}/approve")
 	public ResponseEntity<MaintainanceOutputDTO> approveMaintainance(@PathVariable long id) {
-		return ResponseEntity.ok(maintainanceService.approve(id, MaintainanceStatus.CLIENT_ACKNOWLEDGED));
+		return ResponseEntity.ok(maintainanceService.approve(id));
 	}
 
 	@PutMapping("/{id}/accept")
 	public ResponseEntity<MaintainanceOutputDTO> acceptMaintainance(@PathVariable long id) {
-		return ResponseEntity.ok(maintainanceService.changeStatus(id, MaintainanceStatus.COMPLETED));
+		return ResponseEntity.ok(maintainanceService.accept(id));
+	}
+
+	@PutMapping("/{id}/skip")
+	public ResponseEntity<MaintainanceOutputDTO> skipMaintainance(@PathVariable long id) {
+		return ResponseEntity.ok(maintainanceService.skip(id));
 	}
 
 	@PutMapping("/{id}/notes")
 	public ResponseEntity<MaintainanceOutputDTO> addMaintainanceNotes(@PathVariable long id,
 			@Valid @RequestBody NotesInputDTO notesInput) {
 		return ResponseEntity.ok(maintainanceService.addNotes(id, notesInput));
+	}
+
+	@PutMapping("/{id}/reschedule")
+	public ResponseEntity<MaintainanceOutputDTO> rescheduleMaintainance(@PathVariable long id,
+			@Valid @RequestBody MaintainanceReScheduleInputDTO reScheduleInput) {
+		return ResponseEntity.ok(maintainanceService.reSchedule(id, reScheduleInput));
 	}
 
 	@GetMapping("/my-assigns")

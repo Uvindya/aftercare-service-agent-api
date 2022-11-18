@@ -46,6 +46,11 @@ public interface MaintainanceRepository extends JpaRepository<Maintainance, Long
 	void addNotes(@Param("id") long id, @Param("completionNote") String completionNote,
 			@Param("additionalNote") String additionalNote, @Param("modifiedAt") LocalDateTime modifiedAt);
 
+	@Modifying
+	@Query("update Maintainance m set m.modifiedAt=:modifiedAt, m.scheduledDate=:scheduledDate where m.id =:id")
+	void reSchedule(@Param("id") long id, @Param("scheduledDate") LocalDate scheduledDate,
+			@Param("modifiedAt") LocalDateTime modifiedAt);
+
 	List<Maintainance> findByProductIn(List<Product> products);
 
 	List<Maintainance> findByReportedAtBetween(LocalDate from, LocalDate to);

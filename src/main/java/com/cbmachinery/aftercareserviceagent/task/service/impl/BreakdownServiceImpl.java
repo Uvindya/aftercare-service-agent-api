@@ -309,8 +309,12 @@ public class BreakdownServiceImpl implements BreakdownService {
 		breakdownRepository.complete(id, BreakdownStatus.CANCELLED, LocalDateTime.now());
 		Breakdown updatedBreakdown = findByIdAsDomain(id);
 
-		this.notificationSender.send(Group.ADMINISTRATOR, "Client has cancelled the work on Breakdown Task",
+		this.notificationSender.send(Group.ADMINISTRATOR, "Breakdown has been cancelled",
 				"ID - " + updatedBreakdown.getId(), Category.BREAKDOWN);
+
+		this.notificationSender.send(updatedBreakdown.getProduct().getClient().getUserCredential().getUsername(),
+				"Breakdown has been cancelled", "ID - " + updatedBreakdown.getId(),
+				Category.BREAKDOWN);
 
 		return updatedBreakdown.viewAsDTO();
 	}

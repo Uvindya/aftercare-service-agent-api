@@ -11,10 +11,10 @@ import org.springframework.web.multipart.MultipartFile;
 import com.cbmachinery.aftercareserviceagent.task.dto.BasicMaintainanceOutputDTO;
 import com.cbmachinery.aftercareserviceagent.task.dto.MaintainanceInputDTO;
 import com.cbmachinery.aftercareserviceagent.task.dto.MaintainanceOutputDTO;
+import com.cbmachinery.aftercareserviceagent.task.dto.MaintainanceReScheduleInputDTO;
 import com.cbmachinery.aftercareserviceagent.task.dto.NotesInputDTO;
 import com.cbmachinery.aftercareserviceagent.task.dto.TechnicianTaskAssignmentDTO;
 import com.cbmachinery.aftercareserviceagent.task.model.Maintainance;
-import com.cbmachinery.aftercareserviceagent.task.model.enums.MaintainanceStatus;
 
 public interface MaintainanceService {
 	BasicMaintainanceOutputDTO save(MaintainanceInputDTO maintainanceInput);
@@ -29,13 +29,17 @@ public interface MaintainanceService {
 
 	List<BasicMaintainanceOutputDTO> findMyOwnership(String username);
 
-	MaintainanceOutputDTO start(long id, MaintainanceStatus status);
+	MaintainanceOutputDTO start(long id);
 
-	MaintainanceOutputDTO complete(long id, MaintainanceStatus status);
+	MaintainanceOutputDTO complete(long id);
 
-	MaintainanceOutputDTO approve(long id, MaintainanceStatus status);
+	MaintainanceOutputDTO approve(long id);
 
-	MaintainanceOutputDTO changeStatus(long id, MaintainanceStatus status);
+	MaintainanceOutputDTO accept(long id);
+
+	MaintainanceOutputDTO skip(long id);
+
+	MaintainanceOutputDTO reSchedule(long id, MaintainanceReScheduleInputDTO reScheduleInput);
 
 	MaintainanceOutputDTO addNotes(long id, NotesInputDTO notesInput);
 
@@ -58,6 +62,6 @@ public interface MaintainanceService {
 	long completedCount();
 
 	long scheduledCount();
-	
+
 	void importFromCSV(MultipartFile csv);
 }

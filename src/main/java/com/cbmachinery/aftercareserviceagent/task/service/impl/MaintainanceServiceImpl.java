@@ -31,6 +31,7 @@ import com.cbmachinery.aftercareserviceagent.product.service.ProductService;
 import com.cbmachinery.aftercareserviceagent.task.dto.BasicMaintainanceOutputDTO;
 import com.cbmachinery.aftercareserviceagent.task.dto.MaintainanceInputDTO;
 import com.cbmachinery.aftercareserviceagent.task.dto.MaintainanceOutputDTO;
+import com.cbmachinery.aftercareserviceagent.task.dto.MaintainanceReScheduleInputDTO;
 import com.cbmachinery.aftercareserviceagent.task.dto.NotesInputDTO;
 import com.cbmachinery.aftercareserviceagent.task.dto.TechnicianTaskAssignmentDTO;
 import com.cbmachinery.aftercareserviceagent.task.model.Maintainance;
@@ -131,8 +132,8 @@ public class MaintainanceServiceImpl implements MaintainanceService {
 
 	@Override
 	@Transactional
-	public MaintainanceOutputDTO approve(long id, MaintainanceStatus status) {
-		maintainanceRepository.approve(id, status, LocalDateTime.now());
+	public MaintainanceOutputDTO approve(long id) {
+		maintainanceRepository.approve(id, MaintainanceStatus.CLIENT_ACKNOWLEDGED, LocalDateTime.now());
 		Maintainance updatedMaintainance = findByIdAsDomain(id);
 
 		this.notificationSender.send(updatedMaintainance.getTechnician().getUserCredential().getUsername(),
@@ -147,8 +148,8 @@ public class MaintainanceServiceImpl implements MaintainanceService {
 
 	@Override
 	@Transactional
-	public MaintainanceOutputDTO start(long id, MaintainanceStatus status) {
-		maintainanceRepository.start(id, status, LocalDateTime.now());
+	public MaintainanceOutputDTO start(long id) {
+		maintainanceRepository.start(id, MaintainanceStatus.IN_PROGRESS, LocalDateTime.now());
 		Maintainance updatedMaintainance = findByIdAsDomain(id);
 
 		this.notificationSender.send(Group.ADMINISTRATOR, "Technician has started to work on Maintainance Task",
@@ -163,8 +164,8 @@ public class MaintainanceServiceImpl implements MaintainanceService {
 
 	@Override
 	@Transactional
-	public MaintainanceOutputDTO complete(long id, MaintainanceStatus status) {
-		maintainanceRepository.complete(id, status, LocalDateTime.now());
+	public MaintainanceOutputDTO complete(long id) {
+		maintainanceRepository.complete(id, MaintainanceStatus.NEEDS_CLIENTS_ACCEPTENCE, LocalDateTime.now());
 		Maintainance updatedMaintainance = findByIdAsDomain(id);
 
 		this.notificationSender.send(Group.ADMINISTRATOR, "Technician has completed the work on Maintainance Task",
@@ -179,8 +180,8 @@ public class MaintainanceServiceImpl implements MaintainanceService {
 
 	@Override
 	@Transactional
-	public MaintainanceOutputDTO changeStatus(long id, MaintainanceStatus status) {
-		maintainanceRepository.changeStatus(id, status, LocalDateTime.now());
+	public MaintainanceOutputDTO accept(long id) {
+		maintainanceRepository.changeStatus(id, MaintainanceStatus.COMPLETED, LocalDateTime.now());
 		Maintainance updatedMaintainance = findByIdAsDomain(id);
 
 		this.notificationSender.send(updatedMaintainance.getTechnician().getUserCredential().getUsername(),
@@ -312,6 +313,36 @@ public class MaintainanceServiceImpl implements MaintainanceService {
 			throw new IllegalArgumentException("Error in Client import !!!");
 		}
 
+	}
+
+	@Override
+	@Transactional
+	public MaintainanceOutputDTO skip(long id) {
+		maintainanceRepository.complete(id, MaintainanceStatus.SKIPPED, LocalDateTime.now());
+		Maintainance updatedMaintainance = findByIdAsDomain(id);
+
+		this.notificationSender.send(Group.ADMINISTRATOR, "Maintainance has been Skipped",
+				"ID - " + updatedMaintainance.getId(), Category.MAINTAINANCE);
+
+		this.notificationSender.send(updatedMaintainance.getProduct().getClient().getUserCredential().getUsername(),
+				"Maintainance has been Skipped", "ID - " + updatedMaintainance.getId(), Category.MAINTAINANCE);
+
+		return updatedMaintainance.viewAsDTO();
+	}
+
+	@Override
+	@Transactional
+	public MaintainanceOutputDTO reSchedule(long id, MaintainanceReScheduleInputDTO reScheduleInput) {
+		maintainanceRepository.reSchedule(id, reScheduleInput.getScheduledDate(), LocalDateTime.now());
+		Maintainance updatedMaintainance = findByIdAsDomain(id);
+
+		this.notificationSender.send(Group.ADMINISTRATOR, "Maintainance has been Rescheduled",
+				"ID - " + updatedMaintainance.getId(), Category.MAINTAINANCE);
+
+		this.notificationSender.send(updatedMaintainance.getProduct().getClient().getUserCredential().getUsername(),
+				"Maintainance has been Rescheduled", "ID - " + updatedMaintainance.getId(), Category.MAINTAINANCE);
+
+		return updatedMaintainance.viewAsDTO();
 	}
 
 }
