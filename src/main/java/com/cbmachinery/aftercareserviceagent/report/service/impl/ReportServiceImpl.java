@@ -6,9 +6,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -202,16 +204,17 @@ public class ReportServiceImpl implements ReportService {
 
 		List<MonthlySummaryDTO> montlySummaries = new ArrayList<>();
 
-		for (LocalDate date = LocalDate.now().minusMonths(12); date
-				.isBefore(LocalDate.now()); date = date.plusMonths(1)) {
+		for (LocalDate date = LocalDate.now().minusMonths(11); date
+				.isBefore(LocalDate.now().plusMonths(1)); date = date.plusMonths(1)) {
 			long maintainancesCount = this.maintainanceService.findByScheduledAt(date.withDayOfMonth(1),
 					date.withDayOfMonth(date.getMonth().length(date.isLeapYear()))).size();
 
 			long breakdownsCount = this.breakdownService.findByReportedAt(date.withDayOfMonth(1),
 					date.withDayOfMonth(date.getMonth().length(date.isLeapYear()))).size();
 
-			montlySummaries.add(new MonthlySummaryDTO(date.getYear() + " " + date.getMonth().name(), maintainancesCount,
-					breakdownsCount));
+			montlySummaries.add(new MonthlySummaryDTO(
+					date.getYear() + " " + date.getMonth().getDisplayName(TextStyle.SHORT, Locale.UK),
+					maintainancesCount, breakdownsCount));
 		}
 
 		return new DashboardOutputDTO(this.productService.count(), this.clientService.count(),
