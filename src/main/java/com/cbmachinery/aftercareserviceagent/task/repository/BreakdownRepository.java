@@ -56,6 +56,6 @@ public interface BreakdownRepository extends JpaRepository<Breakdown, Long> {
 
 	long countByStatusIn(List<BreakdownStatus> status);
 
-	@Query(value = "SELECT m.* FROM breakdowns m INNER JOIN products p ON p.id=m.product_id WHERE p.name LIKE CONCAT('%',:searchTerm,'%') OR p.erp_id LIKE CONCAT('%',:searchTerm,'%') OR m.description LIKE CONCAT('%',:searchTerm,'%') OR m.erp_id LIKE CONCAT('%',:searchTerm,'%')", nativeQuery = true, countQuery = "SELECT count(m.*) FROM breakdowns m INNER JOIN products p ON p.id=m.product_id WHERE p.name LIKE CONCAT('%',:searchTerm,'%') OR p.erp_id LIKE CONCAT('%',:searchTerm,'%') OR m.description LIKE CONCAT('%',:searchTerm,'%') OR m.erp_id LIKE CONCAT('%',:searchTerm,'%')")
+	@Query(value = "SELECT m.* FROM breakdowns m INNER JOIN products p ON p.id=m.product_id WHERE p.name LIKE CONCAT('%',:searchTerm,'%') OR p.erp_id LIKE CONCAT('%',:searchTerm,'%') OR m.description LIKE CONCAT('%',:searchTerm,'%') OR m.erp_id LIKE CONCAT('%',:searchTerm,'%')", nativeQuery = true, countQuery = "SELECT count(*) FROM breakdowns m INNER JOIN products p ON p.id=m.product_id WHERE p.name LIKE CONCAT('%',:searchTerm,'%') OR p.erp_id LIKE CONCAT('%',:searchTerm,'%') OR m.description LIKE CONCAT('%',:searchTerm,'%') OR m.erp_id LIKE CONCAT('%',:searchTerm,'%')")
 	Page<Breakdown> findByParams(@Param("searchTerm") String searchTerm, Pageable pageable);
 }

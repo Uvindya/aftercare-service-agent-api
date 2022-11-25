@@ -70,7 +70,7 @@ public interface MaintainanceRepository extends JpaRepository<Maintainance, Long
 
 	long countByStatusIn(List<MaintainanceStatus> status);
 
-	@Query(value = "SELECT m.* FROM maintainances m INNER JOIN products p ON p.id=m.product_id WHERE p.name LIKE CONCAT('%',:searchTerm,'%') OR p.erp_id LIKE CONCAT('%',:searchTerm,'%') OR m.description LIKE CONCAT('%',:searchTerm,'%') OR m.erp_id LIKE CONCAT('%',:searchTerm,'%')", nativeQuery = true, countQuery = "SELECT count(m.*) FROM maintainances m INNER JOIN products p ON p.id=m.product_id WHERE p.name LIKE CONCAT('%',:searchTerm,'%') OR p.erp_id LIKE CONCAT('%',:searchTerm,'%') OR m.description LIKE CONCAT('%',:searchTerm,'%') OR m.erp_id LIKE CONCAT('%',:searchTerm,'%')")
+	@Query(value = "SELECT m.* FROM maintainances m INNER JOIN products p ON p.id=m.product_id WHERE p.name LIKE CONCAT('%',:searchTerm,'%') OR p.erp_id LIKE CONCAT('%',:searchTerm,'%') OR m.description LIKE CONCAT('%',:searchTerm,'%') OR m.erp_id LIKE CONCAT('%',:searchTerm,'%')", nativeQuery = true, countQuery = "SELECT count(*) FROM maintainances m INNER JOIN products p ON p.id=m.product_id WHERE p.name LIKE CONCAT('%',:searchTerm,'%') OR p.erp_id LIKE CONCAT('%',:searchTerm,'%') OR m.description LIKE CONCAT('%',:searchTerm,'%') OR m.erp_id LIKE CONCAT('%',:searchTerm,'%')")
 	Page<Maintainance> findByParams(@Param("searchTerm") String searchTerm, Pageable pageable);
 
 }
