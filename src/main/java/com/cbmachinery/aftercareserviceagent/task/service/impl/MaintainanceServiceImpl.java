@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVFormat;
@@ -77,18 +78,11 @@ public class MaintainanceServiceImpl implements MaintainanceService {
 
 	@Override
 	public Page<BasicMaintainanceOutputDTO> findAll(Pageable pageable, String searchTerm) {
-		// if (Objects.isNull(searchTerm)) {
+		if (Objects.nonNull(searchTerm)) {
+			return maintainanceRepository.findByParams(searchTerm, pageable).map(Maintainance::viewAsBasicDTO);
+		}
+
 		return maintainanceRepository.findAll(pageable).map(Maintainance::viewAsBasicDTO);
-		// }
-
-		// return null;
-
-		/*
-		 * return technicianRepository
-		 * .findAllByEmailContainingIgnoreCaseOrFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
-		 * searchTerm, searchTerm, searchTerm, pageable)
-		 * .map(Technician::viewAsBasicDTO);
-		 */
 	}
 
 	@Override

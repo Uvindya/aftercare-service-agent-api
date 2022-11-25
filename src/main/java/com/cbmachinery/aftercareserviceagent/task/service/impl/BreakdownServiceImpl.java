@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVFormat;
@@ -88,18 +89,11 @@ public class BreakdownServiceImpl implements BreakdownService {
 
 	@Override
 	public Page<BasicBreakdownOutputDTO> findAll(Pageable pageable, String searchTerm) {
-		// if (Objects.isNull(searchTerm)) {
-		return breakdownRepository.findAll(pageable).map(Breakdown::viewAsBasicDTO);
-		// }
+		if (Objects.isNull(searchTerm)) {
+			return breakdownRepository.findAll(pageable).map(Breakdown::viewAsBasicDTO);
+		}
 
-		// return null;
-
-		/*
-		 * return technicianRepository
-		 * .findAllByEmailContainingIgnoreCaseOrFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(
-		 * searchTerm, searchTerm, searchTerm, pageable)
-		 * .map(Technician::viewAsBasicDTO);
-		 */
+		return this.breakdownRepository.findByParams(searchTerm, pageable).map(Breakdown::viewAsBasicDTO);
 	}
 
 	@Override
@@ -313,8 +307,7 @@ public class BreakdownServiceImpl implements BreakdownService {
 				"ID - " + updatedBreakdown.getId(), Category.BREAKDOWN);
 
 		this.notificationSender.send(updatedBreakdown.getProduct().getClient().getUserCredential().getUsername(),
-				"Breakdown has been cancelled", "ID - " + updatedBreakdown.getId(),
-				Category.BREAKDOWN);
+				"Breakdown has been cancelled", "ID - " + updatedBreakdown.getId(), Category.BREAKDOWN);
 
 		return updatedBreakdown.viewAsDTO();
 	}

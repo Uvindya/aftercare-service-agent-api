@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -53,4 +55,7 @@ public interface BreakdownRepository extends JpaRepository<Breakdown, Long> {
 			@Param("to") LocalDateTime to, @Param("technicianId") long technicianId);
 
 	long countByStatusIn(List<BreakdownStatus> status);
+
+	@Query(value = "SELECT m.* FROM breakdowns m INNER JOIN products p ON p.id=m.product_id WHERE p.name LIKE CONCAT('%',:searchTerm,'%') OR p.erp_id LIKE CONCAT('%',:searchTerm,'%') OR m.description LIKE CONCAT('%',:searchTerm,'%') OR m.erp_id LIKE CONCAT('%',:searchTerm,'%')", nativeQuery = true, countQuery = "SELECT count(m.*) FROM breakdowns m INNER JOIN products p ON p.id=m.product_id WHERE p.name LIKE CONCAT('%',:searchTerm,'%') OR p.erp_id LIKE CONCAT('%',:searchTerm,'%') OR m.description LIKE CONCAT('%',:searchTerm,'%') OR m.erp_id LIKE CONCAT('%',:searchTerm,'%')")
+	Page<Breakdown> findByParams(@Param("searchTerm") String searchTerm, Pageable pageable);
 }
