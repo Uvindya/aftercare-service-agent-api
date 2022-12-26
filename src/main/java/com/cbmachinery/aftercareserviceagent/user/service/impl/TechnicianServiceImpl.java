@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -34,6 +35,7 @@ import com.cbmachinery.aftercareserviceagent.notification.sender.NotificationSen
 import com.cbmachinery.aftercareserviceagent.user.dto.BasicUserOutputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.TechnicianInputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.TechnicianOutputDTO;
+import com.cbmachinery.aftercareserviceagent.user.dto.TechnicianProfileDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.TechnicianUpdateDTO;
 import com.cbmachinery.aftercareserviceagent.user.model.Technician;
 import com.cbmachinery.aftercareserviceagent.user.model.enums.Gender;
@@ -187,6 +189,17 @@ public class TechnicianServiceImpl implements TechnicianService {
 				.createdBy(existingTechnician.getCreatedBy()).build();
 
 		return technicianRepository.save(technicianToUpdate).viewAsBasicDTO();
+	}
+
+	@Override
+	public TechnicianProfileDTO findProfile(String email) {
+		// find technician using repo
+		Optional<Technician> searchedTechnician = technicianRepository.findByEmail(email);
+		// show the tech or throw error
+		Technician foundTech = searchedTechnician
+				.orElseThrow(() -> new IllegalArgumentException("No Technician Found for this Email"));
+		// map the tech
+		return foundTech.viewAsProfile();
 	}
 
 }

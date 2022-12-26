@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.cbmachinery.aftercareserviceagent.user.dto.BasicUserOutputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.TechnicianInputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.TechnicianOutputDTO;
+import com.cbmachinery.aftercareserviceagent.user.dto.TechnicianProfileDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.TechnicianUpdateDTO;
 import com.cbmachinery.aftercareserviceagent.user.model.Technician;
 
@@ -32,4 +33,6 @@ public interface TechnicianService {
 	long count();
 
 	Technician findByErpId(String erpId);
+
+	TechnicianProfileDTO findProfile(String email);
 }

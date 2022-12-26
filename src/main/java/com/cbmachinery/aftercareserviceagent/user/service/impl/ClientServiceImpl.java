@@ -34,6 +34,7 @@ import com.cbmachinery.aftercareserviceagent.notification.sender.NotificationSen
 import com.cbmachinery.aftercareserviceagent.user.dto.BasicUserOutputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.ClientInputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.ClientOutputDTO;
+import com.cbmachinery.aftercareserviceagent.user.dto.ClientProfileDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.ClientUpdateDTO;
 import com.cbmachinery.aftercareserviceagent.user.model.Client;
 import com.cbmachinery.aftercareserviceagent.user.model.enums.Gender;
@@ -178,6 +179,11 @@ public class ClientServiceImpl implements ClientService {
 				.createdBy(exitingClient.getCreatedBy()).city(clientInput.getCity()).district(clientInput.getDistrict())
 				.build();
 		return this.clientRepository.save(clientToUpdate).viewAsBasicDTO();
+	}
+
+	@Override
+	public ClientProfileDTO findProfile(String email) {
+		return findByUsername(email).viewAsProfile();
 	}
 
 }

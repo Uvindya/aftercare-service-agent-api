@@ -18,6 +18,7 @@ import com.cbmachinery.aftercareserviceagent.skill.model.Skill;
 import com.cbmachinery.aftercareserviceagent.task.model.Breakdown;
 import com.cbmachinery.aftercareserviceagent.task.model.Maintainance;
 import com.cbmachinery.aftercareserviceagent.user.dto.TechnicianOutputDTO;
+import com.cbmachinery.aftercareserviceagent.user.dto.TechnicianProfileDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
@@ -49,6 +50,12 @@ public class Technician extends User {
 		return new TechnicianOutputDTO(getId(), DateTimeUtil.fomatToLongDateTime(createdAt), createdBy,
 				DateTimeUtil.fomatToLongDateTime(modifiedAt), modifiedBy, getFirstName(), getLastName(), getEmail(),
 				getPrimaryPhoneNo(), getGender(), yearOfExperience, getErpId());
+	}
+
+	@JsonIgnore
+	public TechnicianProfileDTO viewAsProfile() {
+		return new TechnicianProfileDTO(getId(), getFirstName(), getLastName(), getEmail(), getPrimaryPhoneNo(),
+				getErpId());
 	}
 
 }

@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.cbmachinery.aftercareserviceagent.user.dto.BasicUserOutputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.ClientInputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.ClientOutputDTO;
+import com.cbmachinery.aftercareserviceagent.user.dto.ClientProfileDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.ClientUpdateDTO;
 import com.cbmachinery.aftercareserviceagent.user.service.ClientService;
 
@@ -68,4 +70,9 @@ public class ClientController {
 		return ResponseEntity.ok(clientService.findByIdAsDTO(id));
 	}
 
+	@GetMapping("/profile")
+	public ResponseEntity<ClientProfileDTO> findProfile() {
+		return ResponseEntity
+				.ok(clientService.findProfile(SecurityContextHolder.getContext().getAuthentication().getName()));
+	}
 }
