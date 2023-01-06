@@ -81,4 +81,14 @@ public class UserCredentialServiceImpl implements UserCredentialService {
 		return this.userCredentialRepository.findByRole(role);
 	}
 
+	@Override
+	public UserCredential resetPassword(long id, String newPassword) {
+		UserCredential userCredential = this.findById(id);
+		
+		return this.userCredentialRepository.save(UserCredential.builder().id(userCredential.getId())
+				.username(userCredential.getUsername()).password(passwordEncoder.encode(newPassword))
+				.role(userCredential.getRole()).active(userCredential.isActive())
+				.createdAt(userCredential.getCreatedAt()).createdBy(userCredential.getCreatedBy()).build());
+	}
+
 }

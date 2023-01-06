@@ -194,4 +194,21 @@ public class ClientServiceImpl implements ClientService {
 				clientChangePasswordDTO.getOldPassWord(), clientChangePasswordDTO.getNewPassWord());
 	}
 
+	@Override
+	public void resetPassword(long id) {
+		Client client = findById(id);
+		String pwd = RandomStringUtils.random(10, true, true);
+		userCredentialService.resetPassword(client.getUserCredential().getId(), pwd);
+		
+		emailService.sendHtmlEmail(Email.builder().to(client.getEmail())
+				.subject("Your password reseted on CB Aftercare App")
+				.body("<html><body>" + "<h3>Dear " + client.getFirstName() + " " + client.getLastName()
+						+ "</h3>"
+						+ "<p>We have reset your password on CB Aftercare Mobile Application</p>"
+						+ "<h4>Download URL : <a href=''>Android</a></h4>" + "<h4>Username : " + client.getEmail()
+						+ "</h4>" + "<h4>Password : " + pwd + " </h4>" + "<p>Thank you</p>"
+						+ "</body>" + "</html>")
+				.build());
+	}
+
 }

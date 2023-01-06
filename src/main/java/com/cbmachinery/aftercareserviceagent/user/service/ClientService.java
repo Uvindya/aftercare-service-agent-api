@@ -36,5 +36,7 @@ public interface ClientService {
 	ClientProfileDTO findProfile(String email);
 	
 	void changePassword(String username,ClientChangePasswordDTO clientChangePasswordDTO);
+	
+	void resetPassword(long id);
 
 }

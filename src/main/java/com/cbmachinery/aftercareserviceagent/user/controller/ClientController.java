@@ -84,4 +84,13 @@ public class ClientController {
 		return new ResponseEntity<>(null, HttpStatus.OK);
 
 	}
+	
+
+
+	@PutMapping("/resetpassword/{id}")
+	public ResponseEntity<Void> resetPassword(@PathVariable long id) {
+		clientService.resetPassword(id);
+		return new ResponseEntity<>(null, HttpStatus.OK);
+
+	}
 }

@@ -20,4 +20,6 @@ public interface UserCredentialService {
 	boolean usernamesExists(List<String> usernames);
 
 	List<UserCredential> findByRole(Role role);
+
+	UserCredential resetPassword(long id, String newPassword);
 }
