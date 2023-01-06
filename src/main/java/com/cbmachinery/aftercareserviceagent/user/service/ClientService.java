@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.cbmachinery.aftercareserviceagent.user.dto.BasicUserOutputDTO;
+import com.cbmachinery.aftercareserviceagent.user.dto.ClientChangePasswordDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.ClientInputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.ClientOutputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.ClientProfileDTO;
@@ -33,5 +34,7 @@ public interface ClientService {
 	long count();
 
 	ClientProfileDTO findProfile(String email);
+	
+	void changePassword(String username,ClientChangePasswordDTO clientChangePasswordDTO);
 
 }

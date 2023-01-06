@@ -33,6 +33,7 @@ import com.cbmachinery.aftercareserviceagent.notification.model.Category;
 import com.cbmachinery.aftercareserviceagent.notification.model.Group;
 import com.cbmachinery.aftercareserviceagent.notification.sender.NotificationSender;
 import com.cbmachinery.aftercareserviceagent.user.dto.BasicUserOutputDTO;
+import com.cbmachinery.aftercareserviceagent.user.dto.TechnicianChangePasswordDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.TechnicianInputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.TechnicianOutputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.TechnicianProfileDTO;
@@ -200,6 +201,14 @@ public class TechnicianServiceImpl implements TechnicianService {
 				.orElseThrow(() -> new IllegalArgumentException("No Technician Found for this Email"));
 		// map the tech
 		return foundTech.viewAsProfile();
+	}
+
+	@Override
+	public void changePassword(String username, TechnicianChangePasswordDTO technicianChangePasswordDTO) {
+		Technician technician = findByUsername(username);
+		userCredentialService.changePassword(technician.getUserCredential().getId(),
+				technicianChangePasswordDTO.getOldPassWord(), technicianChangePasswordDTO.getNewPassWord());
+
 	}
 
 }

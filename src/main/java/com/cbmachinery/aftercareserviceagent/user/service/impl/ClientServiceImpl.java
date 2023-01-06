@@ -32,6 +32,7 @@ import com.cbmachinery.aftercareserviceagent.notification.model.Category;
 import com.cbmachinery.aftercareserviceagent.notification.model.Group;
 import com.cbmachinery.aftercareserviceagent.notification.sender.NotificationSender;
 import com.cbmachinery.aftercareserviceagent.user.dto.BasicUserOutputDTO;
+import com.cbmachinery.aftercareserviceagent.user.dto.ClientChangePasswordDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.ClientInputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.ClientOutputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.ClientProfileDTO;
@@ -184,6 +185,13 @@ public class ClientServiceImpl implements ClientService {
 	@Override
 	public ClientProfileDTO findProfile(String email) {
 		return findByUsername(email).viewAsProfile();
+	}
+
+	@Override
+	public void changePassword(String username, ClientChangePasswordDTO clientChangePasswordDTO) {
+		Client client = findByUsername(username);
+		userCredentialService.changePassword(client.getUserCredential().getId(),
+				clientChangePasswordDTO.getOldPassWord(), clientChangePasswordDTO.getNewPassWord());
 	}
 
 }

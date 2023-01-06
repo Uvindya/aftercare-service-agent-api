@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.cbmachinery.aftercareserviceagent.user.dto.BasicUserOutputDTO;
+import com.cbmachinery.aftercareserviceagent.user.dto.TechnicianChangePasswordDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.TechnicianInputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.TechnicianOutputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.TechnicianProfileDTO;
@@ -74,6 +75,14 @@ public class TechnicianController {
 	public ResponseEntity<TechnicianProfileDTO> findProfile() {
 		return ResponseEntity
 				.ok(technicianService.findProfile(SecurityContextHolder.getContext().getAuthentication().getName()));
+	}
+	
+	@PutMapping("/resetpassword")
+	public ResponseEntity<Void> resetPassword(TechnicianChangePasswordDTO technicianChangePasswordDTO) {
+		technicianService.changePassword(SecurityContextHolder.getContext().getAuthentication().getName(),
+				technicianChangePasswordDTO);
+		return new ResponseEntity<>(null, HttpStatus.OK);
+
 	}
 
 }

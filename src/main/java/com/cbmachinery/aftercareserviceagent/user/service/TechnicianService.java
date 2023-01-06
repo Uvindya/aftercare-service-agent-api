@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.cbmachinery.aftercareserviceagent.user.dto.BasicUserOutputDTO;
+import com.cbmachinery.aftercareserviceagent.user.dto.TechnicianChangePasswordDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.TechnicianInputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.TechnicianOutputDTO;
 import com.cbmachinery.aftercareserviceagent.user.dto.TechnicianProfileDTO;
@@ -35,4 +36,6 @@ public interface TechnicianService {
 	Technician findByErpId(String erpId);
 
 	TechnicianProfileDTO findProfile(String email);
+	
+	void changePassword(String username,TechnicianChangePasswordDTO technicianChangePasswordDTO);
 }
